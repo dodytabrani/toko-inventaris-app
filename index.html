@@ -17,14 +17,15 @@
     </header>
 
     <main>
-        <section id="auth-section" class="card">
-            <h2>Login / Daftar</h2>
-            <input type="email" id="email" placeholder="Email">
-            <input type="password" id="password" placeholder="Password">
-            <button id="signupEmailBtn">Daftar</button>
-            <button id="signInEmailBtn">Login</button>
-            <p id="auth-message" class="message"></p>
-        </section>
+        <div id="auth-section" class="section">
+    <h2>Login / Daftar</h2>
+    <div>
+        <h3>Daftar Baru</h3>
+        <input type="email" id="signupEmail" placeholder="Email" required>
+        <input type="password" id="signupPassword" placeholder="Password" required>
+        <button id="signupBtn">Daftar</button> <p id="signupMessage" class="message"></p>
+    </div>
+</div>
 
         <section id="app-section" class="card" style="display: none;">
             <h2>Dashboard Inventaris</h2>
