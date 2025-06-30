@@ -611,19 +611,14 @@ saveInventarisBtn.addEventListener('click', async () => {
 
    // ... kode lainnya sebelum baris 626 (asumsi) ...
 
-// ... KODE ANDA SEBELUMNYA ...
-// Misalnya, di dalam fungsi atau event listener seperti ini:
-// document.getElementById('addInventarisForm').addEventListener('submit', async (e) => {
-//     e.preventDefault();
-//     const itemName = document.getElementById('itemName').value;
-//     const itemQuantity = document.getElementById('itemQuantity').value;
-//     const itemPrice = document.getElementById('itemPrice').value;
-//     const inventarisFormMessage = document.getElementById('inventarisFormMessage');
-//     const addInventarisForm = document.getElementById('addInventarisForm');
-//     const addInventarisBtn = document.getElementById('addInventarisBtn');
+// PASTIKAN ANDA BERADA DI DALAM FUNGSI ASYNC ATAU EVENT LISTENER ASYNC
+// (Misalnya, jika ini bagian dari addEventListener('submit', async (e) => { ... });)
 
 // Pastikan variabel itemName, itemQuantity, dan itemPrice sudah terdefinisi
 // dan berisi nilai yang benar dari input form.
+// Pastikan juga inventarisFormMessage, itemNameInput, itemQuantityInput, itemPriceInput,
+// addInventarisForm, addInventarisBtn sudah dideklarasikan dan diakses dengan benar.
+// Dan pastikan fungsi loadInventarisData() tersedia.
 
 const { data, error } = await supabase
     .from('inventories')
@@ -638,13 +633,10 @@ const { data, error } = await supabase
 
 if (error) {
     console.error("Error saving inventory item:", error.message);
-    // Tampilkan pesan error ke pengguna di UI jika perlu
-    inventarisFormMessage.textContent = 'Error: Gagal menyimpan item inventaris. Coba lagi.';
+    inventarisFormMessage.textContent = 'Error: Gagal menyimpan item inventaris. ' + error.message; // Menampilkan pesan error dari Supabase
     inventarisFormMessage.className = 'message error';
 } else {
     console.log("Inventory item saved successfully:", data);
-    // Lakukan sesuatu setelah item tersimpan, misalnya refresh daftar inventaris
-
     inventarisFormMessage.textContent = 'Item berhasil disimpan!';
     inventarisFormMessage.className = 'message success';
     itemNameInput.value = ''; // Kosongkan input
@@ -657,7 +649,5 @@ if (error) {
 
     await loadInventarisData(); // Muat ulang data inventaris untuk menampilkan yang baru
 }
-
-// ... KODE ANDA SETELAHNYA ...
-// Misalnya, penutup event listener:
-// });
+// }); // <--- PENTING: Jika ada '});' di sini untuk menutup event listener Anda, biarkan TETAP ADA.
+       //       Jika tidak ada, jangan tambahkan.
