@@ -388,14 +388,60 @@ async function loadInventarisData() {
 
 // --- FUNGSI MODAL EDIT ITEM ---
 function openEditModal(item) {
-    console.log('Memanggil openEditModal dengan item:', item);
-    if (editItemId) editItemId.value = item.id;
-    if (editItemName) editItemName.value = item.item_name;
-    if (editQuantity) editQuantity.value = item.quantity;
-    if (editPrice) editPrice.value = item.price; // Pastikan ini mengacu ke item.price
+    console.log('--- openEditModal Dipanggil ---');
+    console.log('Item yang diterima:', item);
 
-    if (editItemModal) editItemModal.style.display = 'flex'; // Mengubah display ke 'flex'
-    console.log('Modal display set to flex.');
+    // Pastikan properti item ada sebelum mencoba menggunakannya
+    const itemId = item ? item.id : null;
+    const itemName = item ? item.item_name : '';
+    const itemQuantity = item ? item.quantity : 0;
+    const itemPrice = item ? item.price : 0; // Pastikan 'price' ada di objek item
+
+    // Debugging keberadaan elemen DOM
+    console.log('Cek Elemen DOM:');
+    console.log('editItemId:', editItemId);
+    console.log('editItemName:', editItemName);
+    console.log('editQuantity:', editQuantity);
+    console.log('editPrice:', editPrice);
+    console.log('editItemModal:', editItemModal);
+
+    // Mengisi nilai input
+    if (editItemId) {
+        editItemId.value = itemId;
+        console.log(`Set editItemId.value to: ${editItemId.value}`);
+    } else {
+        console.error('ERROR: Elemen editItemId tidak ditemukan!');
+    }
+
+    if (editItemName) {
+        editItemName.value = itemName;
+        console.log(`Set editItemName.value to: ${editItemName.value}`);
+    } else {
+        console.error('ERROR: Elemen editItemName tidak ditemukan!');
+    }
+
+    if (editQuantity) {
+        editQuantity.value = itemQuantity;
+        console.log(`Set editQuantity.value to: ${editQuantity.value}`);
+    } else {
+        console.error('ERROR: Elemen editQuantity tidak ditemukan!');
+    }
+    
+    if (editPrice) {
+        editPrice.value = itemPrice;
+        console.log(`Set editPrice.value to: ${editPrice.value}`);
+    } else {
+        console.error('ERROR: Elemen editPrice tidak ditemukan! Pastikan kolom "price" ada di tabel Supabase.');
+    }
+
+    // Tampilkan modal
+    if (editItemModal) {
+        editItemModal.style.display = 'flex'; // Mengubah display ke 'flex'
+        console.log('Modal display set to flex.');
+    } else {
+        console.error('ERROR: Elemen editItemModal tidak ditemukan!');
+    }
+    console.log('--- openEditModal Selesai ---');
 }
 
 // --- EVENT LISTENERS MODAL EDIT ITEM ---
