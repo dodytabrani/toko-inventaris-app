@@ -152,51 +152,51 @@ table th {
     font-weight: bold;
 }
 
-/* Pastikan Anda memiliki CSS ini untuk modal Anda */
-
+/* --- CSS MODAL BARU/REVISI TOTAL DIMULAI DI SINI --- */
 .modal {
-    display: none; /* INI PENTING: Sembunyikan secara default. JS akan mengubahnya ke 'flex' */
-    position: fixed; /* Membuat modal tetap di posisi yang sama di viewport */
-    z-index: 1000; /* INI PENTING: Pastikan modal muncul di atas elemen lain */
+    display: none; /* Sembunyikan secara default. JavaScript akan mengubahnya menjadi 'flex' */
+    position: fixed; /* Tetap di viewport saat scroll */
+    z-index: 1000; /* Pastikan di atas elemen lain */
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto; /* Memungkinkan scroll jika konten modal terlalu panjang */
-    background-color: rgba(0,0,0,0.6); /* Latar belakang hitam transparan */
-
-    /* Ini adalah untuk centering modal ketika display diubah menjadi 'flex' oleh JS */
-    justify-content: center; 
-    align-items: center; 
+    overflow: auto; /* Aktifkan scroll jika konten modal terlalu panjang */
+    background-color: rgba(0,0,0,0.6); /* Latar belakang hitam semi-transparan */
+    
+    /* Untuk centering konten modal menggunakan Flexbox */
+    display: flex; /* Ini akan menjadi 'flex' ketika modal terlihat, 'none' ketika tersembunyi */
+    justify-content: center; /* Pusatkan secara horizontal */
+    align-items: center; /* Pusatkan secara vertikal */
 }
 
 .modal-content {
-    background-color: #fefefe; /* Warna latar belakang modal */
-    padding: 20px;
+    background-color: #fefefe; /* Latar belakang putih untuk konten modal */
+    padding: 30px; /* Padding yang lebih besar untuk tampilan yang lebih baik */
     border: 1px solid #888;
     width: 90%; /* Lebar modal */
-    max-width: 500px; /* Lebar maksimal modal */
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3); /* Efek bayangan */
-    border-radius: 8px; /* Sudut membulat */
-    position: relative; /* INI PENTING: Untuk positioning absolut tombol close di dalamnya */
-    /* margin: 15% auto; <-- Jika ada baris ini, HAPUS. Centering sudah di handle oleh flexbox di .modal */
+    max-width: 550px; /* Batasi lebar maksimal */
+    box-shadow: 0 8px 25px rgba(0,0,0,0.4); /* Bayangan yang lebih menonjol */
+    border-radius: 10px; /* Sudut membulat yang lebih halus */
+    position: relative; /* Penting untuk posisi absolut tombol close */
+    animation: animatetop 0.4s; /* Animasi saat muncul */
 }
 
-/* Animasi (opsional, tapi bagus jika ada) */
+/* Animasi untuk modal */
 @keyframes animatetop {
-    from {top: -300px; opacity: 0}
+    from {top: -150px; opacity: 0}
     to {top: 0; opacity: 1}
 }
 
 .close-button {
     color: #aaa;
-    /* float: right; <-- Jika ada baris ini, HAPUS. */
-    font-size: 28px;
+    font-size: 32px; /* Ukuran tombol close yang sedikit lebih besar */
     font-weight: bold;
-    position: absolute; /* INI PENTING: Posisi tombol close di dalam modal-content */
+    position: absolute; /* Posisikan absolut di dalam modal-content */
     top: 10px; /* Jarak dari atas modal-content */
     right: 20px; /* Jarak dari kanan modal-content */
     cursor: pointer;
+    line-height: 1; /* Pastikan centering vertikal untuk simbol x */
 }
 
 .close-button:hover,
@@ -205,18 +205,46 @@ table th {
     text-decoration: none;
 }
 
-/* Pastikan juga Anda punya styling dasar untuk input di dalam modal, misal: */
-.modal-content input[type="text"],
-.modal-content input[type="number"] {
-    width: calc(100% - 20px); /* Adjust as needed */
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+/* Styling untuk form di dalam modal (konsisten dengan input global) */
+.modal-content form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #555;
 }
 
-.modal-content button {
-    padding: 10px 20px;
-    margin-right: 10px;
+.modal-content form input[type="text"],
+.modal-content form input[type="number"] {
+    width: calc(100% - 24px); /* Sesuaikan dengan padding */
+    padding: 12px;
+    margin-bottom: 18px;
+    border: 1px solid #ccc;
     border-radius: 5px;
+    font-size: 1em;
+}
+
+.modal-content form button {
+    padding: 12px 25px;
+    margin-right: 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.05em;
+    transition: background-color 0.2s ease;
+}
+
+/* Warna khusus untuk tombol modal */
+#saveEditBtn {
+    background-color: #28a745; /* Hijau untuk simpan */
+    color: white;
+}
+#saveEditBtn:hover {
+    background-color: #218838;
+}
+
+#cancelEditBtn {
+    background-color: #dc3545; /* Merah untuk batal */
+    color: white;
+}
+#cancelEditBtn:hover {
+    background-color: #c82333;
 }
