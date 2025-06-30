@@ -4,7 +4,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// --- Referensi Elemen UI Umum ---
+// --- Referensi Elemen UI Umum (PASTIKAN INI HANYA ADA SATU KALI) ---
 const authSection = document.getElementById('auth-section');
 const appSection = document.getElementById('app-section');
 const mainLoginBtn = document.getElementById('mainLoginBtn');
@@ -16,7 +16,7 @@ const addInventarisFormSection = document.getElementById('add-inventaris-form');
 const cancelAddInventarisBtn = document.getElementById('cancelAddInventarisBtn');
 
 
-// --- Referensi Elemen Login/Register ---
+// --- Referensi Elemen Login/Register (PASTIKAN INI HANYA ADA SATU KALI) ---
 const loginForm = document.getElementById('login-form');
 const loginEmailInput = document.getElementById('loginEmail');
 const loginPasswordInput = document.getElementById('loginPassword');
@@ -28,7 +28,7 @@ const registerMessage = document.getElementById('register-message');
 const toggleToRegisterBtn = document.getElementById('toggleToRegister');
 const toggleToLoginBtn = document.getElementById('toggleToLogin');
 
-// --- Referensi Elemen Form Tambah Item (PASTIKAN HANYA ADA SATU SET INI) ---
+// --- Referensi Elemen Form Tambah Item (PASTIKAN INI HANYA ADA SATU KALI) ---
 const itemNameInput = document.getElementById('itemName');
 const itemQuantityInput = document.getElementById('itemQuantity');
 const itemUnitTypeInput = document.getElementById('itemUnitType');
@@ -39,7 +39,7 @@ const inventarisFormMessage = document.getElementById('inventaris-form-message')
 const inventarisTableBody = document.getElementById('inventarisTableBody');
 
 
-// --- Referensi Elemen Modal Edit (PASTIKAN HANYA ADA SATU SET INI) ---
+// --- Referensi Elemen Modal Edit (PASTIKAN INI HANYA ADA SATU KALI) ---
 const editItemModal = document.getElementById('editItemModal');
 const closeEditModalBtn = document.querySelector('#editItemModal .close-button');
 const cancelEditBtn = document.getElementById('cancelEditBtn');
@@ -52,18 +52,20 @@ const editUnitType = document.getElementById('editUnitType');
 const editCostPrice = document.getElementById('editCostPrice');
 const editSellingPrice = document.getElementById('editSellingPrice');
 
-// --- Referensi Elemen Form Tambah Item (VERIFIKASI INI JUGA) ---
-// Pastikan ini juga ada di bagian atas script.js Anda
-const itemNameInput = document.getElementById('itemName');
-const itemQuantityInput = document.getElementById('itemQuantity');
-const itemUnitTypeInput = document.getElementById('itemUnitType');
-const itemCostPriceInput = document.getElementById('itemCostPrice');
-const itemSellingPriceInput = document.getElementById('itemSellingPrice');
-const saveInventarisBtn = document.getElementById('saveInventarisBtn');
-const inventarisFormMessage = document.getElementById('inventaris-form-message');
-const inventarisTableBody = document.getElementById('inventarisTableBody');
+// --- Fungsi Pembantu ---
+// ... (Kode fungsi pembantu seperti generateUniqueItemCode dan formatCurrency)
 
+// --- FUNGSI UTAMA ---
+// ... (Kode fungsi utama seperti loadInventarisData, openEditModal)
 
+// --- Event Listener Form Tambah Item ---
+// ... (Kode event listener saveInventarisBtn)
+
+// --- Event Listener Form Edit Item ---
+// ... (Kode event listener editItemForm.onsubmit)
+
+// --- Event Listener Lainnya ---
+// ... (Kode event listener untuk close/cancel modal, delete, login, logout, dll.)
 // --- Fungsi Pembantu (Ini sudah benar, tidak perlu diubah) ---
 function generateUniqueItemCode() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
