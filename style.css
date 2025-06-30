@@ -400,6 +400,9 @@ table td button {
         color: #555;
     }
     /* Specific labels for each column in responsive mode */
+    /* Hapus atau nonaktifkan aturan spesifik seperti ini jika Anda sudah menggunakan data-label di HTML. */
+    /* Karena kita sudah menggunakan data-label di HTML (`<td data-label="Kode Item">`), aturan ini di CSS menjadi redundan dan bisa dihapus/dinonaktifkan */
+    /* Jika Anda masih ingin mempertahankan ini sebagai fallback, pastikan urutannya benar. */
     table td:nth-of-type(1):before { content: "Kode Item:"; }
     table td:nth-of-type(2):before { content: "Nama Item:"; }
     table td:nth-of-type(3):before { content: "Jumlah:"; }
