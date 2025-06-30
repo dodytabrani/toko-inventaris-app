@@ -412,24 +412,29 @@ function openEditModal(item) {
 
     // Pastikan properti item ada sebelum mencoba menggunakannya
     const itemId = item ? item.id : null;
-	const itemCode = item ? item.item_code : ''; // <-- BARU
+    const itemCode = item ? item.item_code : ''; // <-- BARU
     const itemName = item ? item.item_name : '';
     const itemQuantity = item ? item.quantity : 0;
-	const itemUnitType = item ? item.unit_type : 'pcs'; // <-- BARU
-	const itemCostPrice = item ? item.cost_price : 0; // <-- BARU
+    const itemUnitType = item ? item.unit_type : 'pcs'; // <-- BARU
+    const itemCostPrice = item ? item.cost_price : 0; // <-- BARU
     const itemSellingPrice = item ? item.selling_price : 0; // <-- BARU
-    const itemPrice = item ? item.price : 0; // Pastikan 'price' ada di objek item
+
+    // HAPUS BARIS INI KARENA TIDAK DIGUNAKAN LAGI JIKA SUDAH ADA selling_price
+    // const itemPrice = item ? item.price : 0; 
 
     // Debugging keberadaan elemen DOM
     console.log('Cek Elemen DOM:');
     console.log('editItemId:', editItemId);
-	console.log('editItemCode:', editItemCode); // <-- BARU
+    console.log('editItemCode:', editItemCode); // <-- BARU
     console.log('editItemName:', editItemName);
     console.log('editQuantity:', editQuantity);
-	console.log('editUnitType:', editUnitType); // <-- BARU
-	console.log('editCostPrice:', editCostPrice); // <-- BARU
+    console.log('editUnitType:', editUnitType); // <-- BARU
+    console.log('editCostPrice:', editCostPrice); // <-- BARU
     console.log('editSellingPrice:', editSellingPrice); // <-- BARU
-    console.log('editPrice:', editPrice);
+    
+    // HAPUS BARIS INI KARENA VARIABEL 'editPrice' SUDAH TIDAK ADA
+    // console.log('editPrice:', editPrice); 
+    
     console.log('editItemModal:', editItemModal);
 
     // Mengisi nilai input
@@ -438,6 +443,13 @@ function openEditModal(item) {
         console.log(`Set editItemId.value to: ${editItemId.value}`);
     } else {
         console.error('ERROR: Elemen editItemId tidak ditemukan!');
+    }
+
+    if (editItemCode) { // <-- BARU
+        editItemCode.value = itemCode;
+        console.log(`Set editItemCode.value to: ${editItemCode.value}`);
+    } else {
+        console.error('ERROR: Elemen editItemCode tidak ditemukan!');
     }
 
     if (editItemName) {
@@ -453,17 +465,31 @@ function openEditModal(item) {
     } else {
         console.error('ERROR: Elemen editQuantity tidak ditemukan!');
     }
-    
-    if (editPrice) {
-        editPrice.value = itemPrice;
-        console.log(`Set editPrice.value to: ${editPrice.value}`);
+
+    if (editUnitType) { // <-- BARU
+        editUnitType.value = itemUnitType;
+        console.log(`Set editUnitType.value to: ${editUnitType.value}`);
     } else {
-        console.error('ERROR: Elemen editPrice tidak ditemukan! Pastikan kolom "price" ada di tabel Supabase.');
+        console.error('ERROR: Elemen editUnitType tidak ditemukan!');
+    }
+    
+    if (editCostPrice) { // <-- BARU
+        editCostPrice.value = itemCostPrice;
+        console.log(`Set editCostPrice.value to: ${editCostPrice.value}`);
+    } else {
+        console.error('ERROR: Elemen editCostPrice tidak ditemukan!');
+    }
+    
+    if (editSellingPrice) { // <-- BARU
+        editSellingPrice.value = itemSellingPrice;
+        console.log(`Set editSellingPrice.value to: ${editSellingPrice.value}`);
+    } else {
+        console.error('ERROR: Elemen editSellingPrice tidak ditemukan!');
     }
 
     // Tampilkan modal
     if (editItemModal) {
-        editItemModal.style.display = 'flex'; // Mengubah display ke 'flex'
+        editItemModal.style.display = 'flex';
         console.log('Modal display set to flex.');
     } else {
         console.error('ERROR: Elemen editItemModal tidak ditemukan!');
