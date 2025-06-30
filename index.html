@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aplikasi Inventaris Toko</title>
     <link rel="stylesheet" href="style.css">
-   </head>
+    </head>
 <body>
     <header>
         <h1>Aplikasi Inventaris Toko</h1>
@@ -43,36 +43,52 @@
             <button id="addInventarisBtn">Tambah Item</button>
 
             <div id="add-inventaris-form" style="display: none;" class="form-container">
-           <h3>Tambah Item Inventaris Baru</h3>
-           <label for="itemName">Nama Item:</label>
-           <input type="text" id="itemName" placeholder="Nama Item" required>
+                <h3>Tambah Item Inventaris Baru</h3>
+                <label for="itemName">Nama Item:</label>
+                <input type="text" id="itemName" placeholder="Nama Item" required>
 
-           <label for="itemQuantity">Jumlah:</label>
-           <input type="number" id="itemQuantity" placeholder="Jumlah" required min="0">
+                <label for="itemQuantity">Jumlah:</label>
+                <input type="number" id="itemQuantity" placeholder="Jumlah" required min="0">
 
-           <label for="itemUnitType">Satuan:</label>
-        <select id="itemUnitType" required>
-        <option value="pcs">Pcs</option>
-        <option value="pack">Pack</option>
-        <option value="bungkus">Bungkus</option>
-        <option value="unit">Unit</option>
-        <option value="kg">Kg</option>
-        <option value="liter">Liter</option>
-        </select>
+                <label for="itemUnitType">Satuan:</label>
+                <select id="itemUnitType" required>
+                    <option value="pcs">Pcs</option>
+                    <option value="pack">Pack</option>
+                    <option value="bungkus">Bungkus</option>
+                    <option value="unit">Unit</option>
+                    <option value="kg">Kg</option>
+                    <option value="liter">Liter</option>
+                </select>
 
-    <label for="itemCostPrice">Harga Modal:</label>
-    <input type="number" id="itemCostPrice" placeholder="Harga Modal" step="0.01" required min="0">
+                <label for="itemCostPrice">Harga Modal:</label>
+                <input type="number" id="itemCostPrice" placeholder="Harga Modal" step="0.01" required min="0">
 
-    <label for="itemSellingPrice">Harga Jual:</label>
-    <input type="number" id="itemSellingPrice" placeholder="Harga Jual" step="0.01" required min="0">
-    
-    <button id="saveInventarisBtn">Simpan Item</button>
-    <button id="cancelAddInventarisBtn">Batal</button>
-    <p id="inventaris-form-message" class="message"></p>
-</div>
+                <label for="itemSellingPrice">Harga Jual:</label>
+                <input type="number" id="itemSellingPrice" placeholder="Harga Jual" step="0.01" required min="0">
+                
+                <button id="saveInventarisBtn">Simpan Item</button>
+                <button id="cancelAddInventarisBtn">Batal</button>
+                <p id="inventaris-form-message" class="message"></p>
+            </div>
 
             <div id="inventaris-data">
-                <p>Memuat data inventaris...</p>
+                <p>Memuat data inventaris...</p> 
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Kode Item</th>
+                            <th>Nama Item</th>
+                            <th>Jumlah</th>
+                            <th>Satuan</th>
+                            <th>Harga Modal</th>
+                            <th>Harga Jual</th>
+                            <th>Keuntungan/Item</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventarisTableBody">
+                        </tbody>
+                </table>
             </div>
 
             <button id="logoutBtn">Logout</button> 
@@ -102,71 +118,52 @@
                             <th>Aksi</th>
                         </tr>
                     </thead>
-					
-					<thead>
-                        <tr>
-                            <th>Kode Item</th><th>Nama Item</th>
-                            <th>Jumlah</th>
-                            <th>Satuan</th><th>Harga Modal</th><th>Harga Jual</th><th>Keuntungan/Item</th><th>Aksi</th>
-                        </tr>
-                    </thead>
-                data.forEach(item => {
-                // Hitung keuntungan per item
-                const profitPerItem = (item.selling_price || 0) - (item.cost_price || 0); // Pastikan ada nilai default 0
-                html += `
-                    <tr>
-                        <td>${item.item_code || 'N/A'}</td>                         <td>${item.item_name}</td>
-                        <td>${item.quantity}</td>
-                        <td>${item.unit_type || 'pcs'}</td>                         <td>Rp ${item.cost_price ? item.cost_price.toLocaleString('id-ID') : '0'}</td>                         <td>Rp ${item.selling_price ? item.selling_price.toLocaleString('id-ID') : '0'}</td>                         <td class="${profitPerItem < 0 ? 'text-red' : 'text-green'}">Rp ${profitPerItem.toLocaleString('id-ID')}</td>                         <td>
-                            <button class="edit-item-btn" data-id="${item.id}">Edit</button>
-                            <button class="delete-item-btn" data-id="${item.id}">Hapus</button>
-                        </td>
-                    </tr>
-                `;
-            });
-                    <tbody id="licenses-table-body"> </tbody>
+                    <tbody id="licenses-table-body"> 
+                        </tbody>
                 </table>
             </div>
             <button id="adminLogoutBtn">Logout Admin</button>
         </section>
 
         <div id="editItemModal" class="modal">
-    <div class="modal-content">
-        <span class="close-button">&times;</span>
-        <h2>Edit Item Inventaris</h2>
-        <form id="editItemForm">
-            <input type="hidden" id="editItemId">
-            
-            <label for="editItemCode">Kode Item:</label>
-            <input type="text" id="editItemCode" readonly> <label for="editItemName">Nama Item:</label>
-            <input type="text" id="editItemName" required>
+            <div class="modal-content">
+                <span class="close-button">&times;</span>
+                <h2>Edit Item Inventaris</h2>
+                <form id="editItemForm">
+                    <input type="hidden" id="editItemId">
+                    
+                    <label for="editItemCode">Kode Item:</label>
+                    <input type="text" id="editItemCode" readonly>
+                    
+                    <label for="editItemName">Nama Item:</label>
+                    <input type="text" id="editItemName" required>
 
-            <label for="editQuantity">Jumlah:</label>
-            <input type="number" id="editQuantity" required min="0">
+                    <label for="editQuantity">Jumlah:</label>
+                    <input type="number" id="editQuantity" required min="0">
 
-            <label for="editUnitType">Satuan:</label>
-            <select id="editUnitType" required>
-                <option value="pcs">Pcs</option>
-                <option value="pack">Pack</option>
-                <option value="bungkus">Bungkus</option>
-                <option value="unit">Unit</option>
-                <option value="kg">Kg</option>
-                <option value="liter">Liter</option>
-                </select>
+                    <label for="editUnitType">Satuan:</label>
+                    <select id="editUnitType" required>
+                        <option value="pcs">Pcs</option>
+                        <option value="pack">Pack</option>
+                        <option value="bungkus">Bungkus</option>
+                        <option value="unit">Unit</option>
+                        <option value="kg">Kg</option>
+                        <option value="liter">Liter</option>
+                    </select>
 
-            <label for="editCostPrice">Harga Modal:</label>
-            <input type="number" id="editCostPrice" step="0.01" required min="0">
+                    <label for="editCostPrice">Harga Modal:</label>
+                    <input type="number" id="editCostPrice" step="0.01" required min="0">
 
-            <label for="editSellingPrice">Harga Jual:</label>
-            <input type="number" id="editSellingPrice" step="0.01" required min="0">
-            
-            <button type="submit" id="saveEditBtn">Simpan Perubahan</button>
-            <button type="button" id="cancelEditBtn">Batal</button>
-        </form>
-    </div>
-</div>
+                    <label for="editSellingPrice">Harga Jual:</label>
+                    <input type="number" id="editSellingPrice" step="0.01" required min="0">
+                    
+                    <button type="submit" id="saveEditBtn">Simpan Perubahan</button>
+                    <button type="button" id="cancelEditBtn">Batal</button>
+                </form>
+            </div>
+        </div>
     </main>
-	<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="script.js"></script>
 </body>
 </html>
