@@ -349,23 +349,32 @@ async function loadInventarisData() {
                     <tbody>
             `;
             data.forEach(item => {
-                html += `
-                    <tr>
-                        <td>${item.item_name}</td>
-                        <td>${item.quantity}</td>
-                        <td>Rp ${item.price ? item.price.toLocaleString('id-ID') : '0'}</td>
-                        <td>
-                            <button class="edit-item-btn" data-id="${item.id}">Edit</button>
-                            <button class="delete-item-btn" data-id="${item.id}">Hapus</button>
-                        </td>
-                    </tr>
-                `;
-            });
-            html += `
-                    </tbody>
-                </table>
-            `;
-            inventarisDataDiv.innerHTML = html;
+    const profitPerItem = (item.selling_price || 0) - (item.cost_price || 0);
+    const formattedCostPrice = item.cost_price ? `Rp ${item.cost_price.toLocaleString('id-ID')}` : 'Rp 0';
+    const formattedSellingPrice = item.selling_price ? `Rp ${item.selling_price.toLocaleString('id-ID')}` : 'Rp 0';
+    const formattedProfit = `Rp ${profitPerItem.toLocaleString('id-ID')}`;
+
+    html += `
+        <tr>
+            <td>${item.item_code || 'N/A'}</td>
+            <td>${item.item_name}</td>
+            <td>${item.quantity}</td>
+            <td>${item.unit_type || 'pcs'}</td>
+            <td>${formattedCostPrice}</td>
+            <td>${formattedSellingPrice}</td>
+            <td class="${profitPerItem < 0 ? 'text-red' : (profitPerItem > 0 ? 'text-green' : '')}">${formattedProfit}</td>
+            <td>
+                <button class="edit-item-btn" data-id="${item.id}">Edit</button>
+                <button class="delete-item-btn" data-id="${item.id}">Hapus</button>
+            </td>
+        </tr>
+    `;
+});
+html += `
+            </tbody>
+        </table>
+    `;
+inventarisDataDiv.innerHTML = html;
 
             // Tambahkan event listener untuk tombol edit/hapus setelah elemen dibuat
             document.querySelectorAll('.edit-item-btn').forEach(button => {
