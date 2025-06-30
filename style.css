@@ -1,106 +1,159 @@
+/* General Body and Layout */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Inter', sans-serif; /* Modern font */
     margin: 0;
-    padding: 20px;
-    background-color: #eef1f5;
+    padding: 0; /* Remove initial padding, use spacing in main */
+    background-color: #f0f2f5; /* Light gray background */
     color: #333;
     display: flex;
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
 }
 
 header {
-    background-color: #0056b3;
+    background-color: #2c3e50; /* Dark blue/gray header */
     color: white;
-    padding: 15px 30px;
-    border-radius: 8px;
-    margin-bottom: 20px;
+    padding: 15px 25px;
+    border-radius: 0; /* No border-radius for full width header */
+    margin-bottom: 25px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    max-width: 800px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 header h1 {
     margin: 0;
     font-size: 1.8em;
+    font-weight: 600;
 }
 
 nav button {
-    background-color: #28a745;
+    background-color: #3498db; /* Blue for nav buttons */
     color: white;
     border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
+    padding: 10px 18px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 0.9em;
-    transition: background-color 0.2s ease;
+    font-size: 0.95em;
+    font-weight: 500;
+    transition: background-color 0.2s ease, transform 0.1s ease;
     margin-left: 10px;
 }
 
 nav button:hover {
-    background-color: #218838;
+    background-color: #2980b9;
+    transform: translateY(-1px);
 }
 
 main {
     width: 100%;
-    max-width: 800px;
+    max-width: 950px; /* Increased max-width for wider tables */
+    padding: 0 20px; /* Padding for main content */
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 25px; /* Spacing between sections */
+    margin-bottom: 30px; /* Space at the bottom */
 }
 
 .card {
     background-color: white;
     padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px; /* Softer rounded corners */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* More subtle shadow */
 }
 
 h2 {
-    color: #0056b3;
+    color: #2c3e50;
     margin-top: 0;
-    border-bottom: 2px solid #eee;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
+    border-bottom: 1px solid #eee; /* Lighter border */
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+    font-size: 1.6em;
+    font-weight: 600;
 }
 
+h3 {
+    color: #34495e;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+    font-weight: 500;
+}
+
+/* Form Elements */
 input[type="email"],
 input[type="password"],
 input[type="text"],
-input[type="number"] {
-    width: calc(100% - 22px);
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+input[type="number"],
+select {
+    width: calc(100% - 24px); /* Account for padding */
+    padding: 12px;
+    margin-bottom: 18px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
     font-size: 1em;
+    box-sizing: border-box; /* Crucial for consistent width */
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus, select:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    outline: none;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #555;
 }
 
 button {
-    background-color: #007bff;
+    background-color: #3498db;
     color: white;
     border: none;
-    padding: 12px 20px;
-    border-radius: 5px;
+    padding: 12px 22px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 1em;
-    transition: background-color 0.2s ease;
-    margin-right: 10px;
+    font-size: 1.05em;
+    font-weight: 500;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    margin-right: 12px; /* Spacing between buttons */
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #2980b9;
+    transform: translateY(-1px);
 }
 
+/* Specific button styles */
+#addInventarisBtn, #saveInventarisBtn, #saveEditBtn, #loginBtn, #signupBtn, #adminLoginBtn {
+    background-color: #28a745; /* Green for primary actions */
+}
+#addInventarisBtn:hover, #saveInventarisBtn:hover, #saveEditBtn:hover, #loginBtn:hover, #signupBtn:hover, #adminLoginBtn:hover {
+    background-color: #218838;
+}
+
+#cancelAddInventarisBtn, #cancelEditBtn, #mainLogoutBtn, #logoutBtn, #adminLogoutBtn {
+    background-color: #e74c3c; /* Red for destructive/cancel actions */
+}
+#cancelAddInventarisBtn:hover, #cancelEditBtn:hover, #mainLogoutBtn:hover, #logoutBtn:hover, #adminLogoutBtn:hover {
+    background-color: #c0392b;
+}
+
+/* Messages */
 .message {
     margin-top: 15px;
-    padding: 10px;
-    border-radius: 5px;
-    font-size: 0.9em;
+    padding: 12px 18px;
+    border-radius: 6px;
+    font-size: 0.95em;
+    font-weight: 500;
+    line-height: 1.4;
 }
 
 .message.success {
@@ -115,142 +168,247 @@ button:hover {
     border: 1px solid #f5c6cb;
 }
 
+/* Inventaris Table Section */
 #inventaris-data {
-    border: 1px dashed #ccc;
-    padding: 20px;
-    min-height: 100px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-style: italic;
-    color: #666;
+    border: none; /* Remove dashed border, let card handle styling */
+    padding: 0; /* No padding here, content will be within the table */
+    min-height: auto; /* Allow height to be determined by content */
+    display: block; /* Important for table rendering */
+    color: #333;
 }
 
 table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate; /* Use separate to allow border-radius on cells if needed */
+    border-spacing: 0; /* Remove space between cells */
     margin-top: 20px;
+    background-color: white;
+    border-radius: 10px; /* Rounded corners for the table itself */
+    overflow: hidden; /* Ensures rounded corners are applied */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); /* Light shadow for table */
 }
 
 table th, table td {
-    border: 1px solid #ddd;
-    padding: 10px;
+    border: none; /* Remove individual cell borders, use table borders or subtle bottom border */
+    padding: 14px 18px;
     text-align: left;
+    vertical-align: middle; /* Align text vertically in middle */
+    font-size: 0.9em;
 }
 
 table th {
-    background-color: #f2f2f2;
+    background-color: #ecf0f1; /* Light gray for header */
+    color: #555;
+    font-weight: 600;
+    text-transform: uppercase; /* Uppercase headers */
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #ddd; /* Subtle line below headers */
 }
 
-.status-active {
-    color: #28a745;
+table td {
+    border-bottom: 1px solid #f2f2f2; /* Lighter line between rows */
+}
+
+table tbody tr:last-child td {
+    border-bottom: none; /* No border for the last row */
+}
+
+/* Zebra striping for better readability */
+table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Hover effect on table rows */
+table tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* Table specific buttons (edit/delete) */
+table td button {
+    padding: 8px 12px;
+    font-size: 0.85em;
+    margin-right: 5px; /* Closer spacing for action buttons */
+    border-radius: 4px;
+}
+
+/* Profit/Loss styling */
+.text-red {
+    color: #e74c3c; /* Consistent red */
+    font-weight: bold;
+}
+.text-green {
+    color: #28a745; /* Consistent green */
     font-weight: bold;
 }
 
-.status-expired {
-    color: #dc3545;
-    font-weight: bold;
+/* Form Container Styling (for add item form) */
+.form-container {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    margin-bottom: 25px; /* Spacing below the form */
 }
 
-/* --- CSS MODAL BARU/REVISI TOTAL DIMULAI DI SINI --- */
+/* Modal Styling */
 .modal {
-    display: none; /* INI YANG PALING PENTING: Sembunyikan secara default. JavaScript akan mengubahnya menjadi 'flex' */
-    position: fixed; /* Tetap di viewport saat scroll */
-    z-index: 1000; /* Pastikan di atas elemen lain */
+    display: none;
+    position: fixed;
+    z-index: 1000;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto; /* Aktifkan scroll jika konten modal terlalu panjang */
-    background-color: rgba(0,0,0,0.6); /* Latar belakang hitam semi-transparan */
-    
-    /* Properti Flexbox untuk centering - ini akan aktif saat display diubah ke 'flex' oleh JS */
-    justify-content: center; /* Pusatkan secara horizontal */
-    align-items: center; /* Pusatkan secara vertikal */
+    overflow: auto;
+    background-color: rgba(0,0,0,0.6);
+    justify-content: center;
+    align-items: center;
+    padding: 20px; /* Add padding for small screens */
+    box-sizing: border-box;
 }
 
 .modal-content {
-    background-color: #fefefe; /* Latar belakang putih untuk konten modal */
-    padding: 30px; /* Padding yang lebih besar untuk tampilan yang lebih baik */
-    border: 1px solid #888;
-    width: 90%; /* Lebar modal */
-    max-width: 550px; /* Batasi lebar maksimal */
-    box-shadow: 0 8px 25px rgba(0,0,0,0.4); /* Bayangan yang lebih menonjol */
-    border-radius: 10px; /* Sudut membulat yang lebih halus */
-    position: relative; /* Penting untuk posisi absolut tombol close */
-    animation: animatetop 0.4s; /* Animasi saat muncul */
+    background-color: #fefefe;
+    padding: 30px;
+    border: none; /* Remove border, rely on shadow */
+    width: 95%; /* Make it wider on small screens */
+    max-width: 600px; /* Slightly wider max-width */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3); /* Stronger shadow */
+    border-radius: 12px; /* More rounded corners */
+    position: relative;
+    animation: animatetop 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Smoother animation */
 }
 
-/* Animasi untuk modal */
 @keyframes animatetop {
-    from {top: -150px; opacity: 0}
-    to {top: 0; opacity: 1}
+    from {transform: translateY(-50px); opacity: 0;}
+    to {transform: translateY(0); opacity: 1;}
 }
 
 .close-button {
-    color: #aaa;
-    font-size: 32px; /* Ukuran tombol close yang sedikit lebih besar */
-    font-weight: bold;
-    position: absolute; /* Posisikan absolut di dalam modal-content */
-    top: 10px; /* Jarak dari atas modal-content */
-    right: 20px; /* Jarak dari kanan modal-content */
+    color: #888;
+    font-size: 36px; /* Larger close button */
+    font-weight: normal; /* Use font-weight normal, rely on icon */
+    position: absolute;
+    top: 15px;
+    right: 25px;
     cursor: pointer;
-    line-height: 1; /* Pastikan centering vertikal untuk simbol x */
+    line-height: 1;
+    transition: color 0.2s ease;
 }
 
 .close-button:hover,
 .close-button:focus {
-    color: #000;
-    text-decoration: none;
+    color: #333;
 }
 
-/* Styling untuk form di dalam modal (konsisten dengan input global) */
+/* Modal Form Styling */
 .modal-content form label {
     display: block;
     margin-bottom: 8px;
-    font-weight: bold;
-    color: #555;
+    font-weight: 600;
+    color: #444;
 }
 
 .modal-content form input[type="text"],
-.modal-content form input[type="number"] {
-    width: calc(100% - 24px); /* Sesuaikan dengan padding */
+.modal-content form input[type="number"],
+.modal-content form select {
+    width: calc(100% - 24px);
     padding: 12px;
     margin-bottom: 18px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
     font-size: 1em;
+    box-sizing: border-box;
 }
 
 .modal-content form button {
     padding: 12px 25px;
+    margin-top: 15px; /* Space above buttons */
     margin-right: 15px;
     border-radius: 6px;
-    cursor: pointer;
     font-size: 1.05em;
-    transition: background-color 0.2s ease;
 }
 
-/* Warna khusus untuk tombol modal */
-#saveEditBtn {
-    background-color: #28a745; /* Hijau untuk simpan */
-    color: white;
-}
-#saveEditBtn:hover {
-    background-color: #218838;
-}
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        text-align: center;
+        padding: 15px 20px;
+    }
 
-#cancelEditBtn {
-    background-color: #dc3545; /* Merah untuk batal */
-    color: white;
-}
-#cancelEditBtn:hover {
-    background-color: #c82333;
-}
-/* Di style.css */
-.text-red {
-    color: red;
-}
-.text-green {
-    color: green;
+    header h1 {
+        margin-bottom: 10px;
+    }
+
+    main {
+        padding: 0 15px;
+        gap: 20px;
+    }
+
+    .card {
+        padding: 20px;
+    }
+
+    table, .form-container {
+        overflow-x: auto; /* Allow horizontal scrolling for tables and forms */
+    }
+
+    table thead, table tbody, table th, table td, table tr {
+        display: block; /* Stack table elements for smaller screens */
+    }
+
+    table thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    table tr {
+        border: 1px solid #ddd;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    table td {
+        border: none;
+        position: relative;
+        padding-left: 50%;
+        text-align: right;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 1em;
+    }
+
+    table td::before {
+        content: attr(data-label); /* Use data-label for pseudo-elements */
+        position: absolute;
+        left: 10px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        text-align: left;
+        font-weight: 600;
+        color: #555;
+    }
+    /* Specific labels for each column in responsive mode */
+    table td:nth-of-type(1):before { content: "Kode Item:"; }
+    table td:nth-of-type(2):before { content: "Nama Item:"; }
+    table td:nth-of-type(3):before { content: "Jumlah:"; }
+    table td:nth-of-type(4):before { content: "Satuan:"; }
+    table td:nth-of-type(5):before { content: "Harga Modal:"; }
+    table td:nth-of-type(6):before { content: "Harga Jual:"; }
+    table td:nth-of-type(7):before { content: "Keuntungan/Item:"; }
+    table td:nth-of-type(8):before { content: "Aksi:"; }
+
+
+    .modal-content {
+        padding: 20px;
+    }
+
+    .modal-content form input, .modal-content form select {
+        width: calc(100% - 20px); /* Adjust for new padding */
+    }
 }
