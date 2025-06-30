@@ -1,66 +1,45 @@
-// --- 1. INISIALISASI SUPABASE ---
-// GANTI DENGAN KREDENSIAL PROYEK SUPABASE ANDA YANG BARU!
-const SUPABASE_URL = 'https://sjxhosrvcmejqprooofk.supabase.co'; // Contoh: 'https://abcdefghijk.supabase.co'
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNqeGhvc3J2Y21lanFwcm9vb2ZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEyMzIxMzEsImV4cCI6MjA2NjgwODEzMX0.n3RmP7ouaZSPBuymRi6axXWZQc_DJKi2gX0VEeV3o4U'; // Contoh: 'eyJhbGciOiJIUzI1NiI...'
+// --- Inisialisasi Supabase Client ---
+const SUPABASE_URL = 'YOUR_SUPABASE_URL'; // Ganti dengan URL Supabase Anda
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // Ganti dengan Anon Key Anda
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// --- 2. REFERENSI ELEMEN HTML ---
-// Pastikan ID ini cocok persis dengan yang ada di index.html
+// --- Referensi Elemen UI Umum ---
 const authSection = document.getElementById('auth-section');
 const appSection = document.getElementById('app-section');
-const adminLoginSection = document.getElementById('admin-login-section');
+const mainLoginBtn = document.getElementById('mainLoginBtn');
+const mainLogoutBtn = document.getElementById('mainLogoutBtn');
 const adminPanelSection = document.getElementById('admin-panel-section');
+const adminLoginSection = document.getElementById('admin-login-section');
+const showAddInventarisFormBtn = document.getElementById('showAddInventarisFormBtn');
+const addInventarisFormSection = document.getElementById('add-inventaris-form');
+const cancelAddInventarisBtn = document.getElementById('cancelAddInventarisBtn');
 
-// Autentikasi
-const signupEmailInput = document.getElementById('signupEmail');
-const signupPasswordInput = document.getElementById('signupPassword');
-const signupBtn = document.getElementById('signupBtn');
-const signupMessage = document.getElementById('signupMessage');
 
+// --- Referensi Elemen Login/Register ---
+const loginForm = document.getElementById('login-form');
 const loginEmailInput = document.getElementById('loginEmail');
 const loginPasswordInput = document.getElementById('loginPassword');
-const loginBtn = document.getElementById('loginBtn'); // Untuk tombol login di form
-const loginMessage = document.getElementById('loginMessage');
+const loginMessage = document.getElementById('login-message');
+const registerForm = document.getElementById('register-form');
+const registerEmailInput = document.getElementById('registerEmail');
+const registerPasswordInput = document.getElementById('registerPassword');
+const registerMessage = document.getElementById('register-message');
+const toggleToRegisterBtn = document.getElementById('toggleToRegister');
+const toggleToLoginBtn = document.getElementById('toggleToLogin');
 
-const mainLoginBtn = document.getElementById('mainLoginBtn'); // Tombol Login/Daftar di header
-const mainLogoutBtn = document.getElementById('mainLogoutBtn'); // Tombol Logout di header
-
-const logoutBtn = document.getElementById('logoutBtn'); // Tombol Logout di app-section
-const userEmailSpan = document.getElementById('userEmail');
-const licenseStatusP = document.getElementById('license-status');
-
-// Admin
-const adminEmailInput = document.getElementById('adminEmail');
-const adminPasswordInput = document.getElementById('adminPassword');
-const adminLoginBtn = document.getElementById('adminLoginBtn'); // ID diperbaiki
-const adminLoginMessage = document.getElementById('adminLoginMessage'); // ID diperbaiki
-
-const licensesTableBody = document.getElementById('licenses-table-body'); // ID diperbaiki
-const adminLogoutBtn = document.getElementById('adminLogoutBtn');
-const refreshLicensesBtn = document.getElementById('refreshLicensesBtn');
-
-// Inventaris User
-const inventarisDataDiv = document.getElementById('inventaris-data');
-const addInventarisBtn = document.getElementById('addInventarisBtn');
-
-const addInventarisForm = document.getElementById('add-inventaris-form');
+// --- Referensi Elemen Form Tambah Item (PASTIKAN HANYA ADA SATU SET INI) ---
 const itemNameInput = document.getElementById('itemName');
 const itemQuantityInput = document.getElementById('itemQuantity');
-
-// HAPUS BARIS INI: const itemPriceInput = document.getElementById('itemPrice');
-// GANTI DENGAN YANG BARU INI:
-const itemUnitTypeInput = document.getElementById('itemUnitType'); // <-- BARU: PASTIKAN INI ADA
-const itemCostPriceInput = document.getElementById('itemCostPrice'); // <-- BARU: PASTIKAN INI ADA
-const itemSellingPriceInput = document.getElementById('itemSellingPrice'); // <-- BARU: PASTIKAN INI ADA (ini menggantikan itemPriceInput)
-
+const itemUnitTypeInput = document.getElementById('itemUnitType');
+const itemCostPriceInput = document.getElementById('itemCostPrice');
+const itemSellingPriceInput = document.getElementById('itemSellingPrice');
 const saveInventarisBtn = document.getElementById('saveInventarisBtn');
-const cancelAddInventarisBtn = document.getElementById('cancelAddInventarisBtn');
 const inventarisFormMessage = document.getElementById('inventaris-form-message');
+const inventarisTableBody = document.getElementById('inventarisTableBody');
 
-// --- Referensi Elemen Modal Edit (VERIFIKASI INI HANYA UNTUK MEMASTIKAN ANDA SUDAH MEMILIKI INI) ---
-// Pastikan baris ini ada di bagian atas script.js Anda,
-// bersama dengan semua deklarasi const lainnya.
+
+// --- Referensi Elemen Modal Edit (PASTIKAN HANYA ADA SATU SET INI) ---
 const editItemModal = document.getElementById('editItemModal');
 const closeEditModalBtn = document.querySelector('#editItemModal .close-button');
 const cancelEditBtn = document.getElementById('cancelEditBtn');
