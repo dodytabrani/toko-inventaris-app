@@ -154,7 +154,7 @@ table th {
 
 /* --- CSS MODAL BARU/REVISI TOTAL DIMULAI DI SINI --- */
 .modal {
-    display: none; /* Sembunyikan secara default. JavaScript akan mengubahnya menjadi 'flex' */
+    display: none; /* INI YANG PALING PENTING: Sembunyikan secara default. JavaScript akan mengubahnya menjadi 'flex' */
     position: fixed; /* Tetap di viewport saat scroll */
     z-index: 1000; /* Pastikan di atas elemen lain */
     left: 0;
@@ -164,8 +164,7 @@ table th {
     overflow: auto; /* Aktifkan scroll jika konten modal terlalu panjang */
     background-color: rgba(0,0,0,0.6); /* Latar belakang hitam semi-transparan */
     
-    /* Untuk centering konten modal menggunakan Flexbox */
-    display: flex; /* Ini akan menjadi 'flex' ketika modal terlihat, 'none' ketika tersembunyi */
+    /* Properti Flexbox untuk centering - ini akan aktif saat display diubah ke 'flex' oleh JS */
     justify-content: center; /* Pusatkan secara horizontal */
     align-items: center; /* Pusatkan secara vertikal */
 }
