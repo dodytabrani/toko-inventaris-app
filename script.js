@@ -609,21 +609,27 @@ saveInventarisBtn.addEventListener('click', async () => {
     }
 
 
-    const { data, error } = await supabase
-        .from('inventories')
-        .insert([
-            {
-                user_id: user.id,
-                item_name: itemName,
-                quantity: itemQuantity,
-                price: itemPrice
-            }
-        ]);
+    // Pastikan variabel itemName, itemQuantity, dan itemPrice sudah terdefinisi
+// dan berisi nilai yang benar dari input form.
 
-    if (error) {
-        inventarisFormMessage.textContent = 'Error menyimpan item: ' + error.message;
-        inventarisFormMessage.className = 'message error';
-        console.error("Error saving inventory item:", error.message);
+const { data, error } = await supabase
+    .from('inventories')
+    .insert([
+        {
+            // user_id: user.id, // <-- HAPUS BARIS INI
+            item_name: itemName,
+            quantity: itemQuantity,
+            price: itemPrice
+        }
+    ]);
+
+if (error) {
+    console.error("Error saving inventory item:", error.message);
+    // Tampilkan pesan error ke pengguna di UI jika perlu
+} else {
+    console.log("Inventory item saved successfully:", data);
+    // Lakukan sesuatu setelah item tersimpan, misalnya refresh daftar inventaris
+}
     } else {
         inventarisFormMessage.textContent = 'Item berhasil disimpan!';
         inventarisFormMessage.className = 'message success';
