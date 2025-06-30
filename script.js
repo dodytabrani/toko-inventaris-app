@@ -58,9 +58,24 @@ const closeEditModalBtn = document.querySelector('#editItemModal .close-button')
 const cancelEditBtn = document.getElementById('cancelEditBtn');
 const editItemForm = document.getElementById('editItemForm');
 const editItemId = document.getElementById('editItemId');
+const editItemCode = document.getElementById('editItemCode'); // <-- BARU
 const editItemName = document.getElementById('editItemName');
 const editQuantity = document.getElementById('editQuantity');
-const editPrice = document.getElementById('editPrice');
+const editUnitType = document.getElementById('editUnitType'); // <-- BARU
+const editCostPrice = document.getElementById('editCostPrice'); // <-- BARU
+// const editPrice = document.getElementById('editPrice'); // <--- Ini mungkin perlu diganti atau dihapus jika Anda mengganti id-nya di HTML
+const editSellingPrice = document.getElementById('editSellingPrice'); // <-- BARU
+
+// --- Fungsi Pembantu ---
+function generateUniqueItemCode() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    const length = 8; // Anda bisa sesuaikan panjang kode item
+    for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+}
 
 
 // --- 3. FUNGSI UTAMA ---
@@ -393,15 +408,23 @@ function openEditModal(item) {
 
     // Pastikan properti item ada sebelum mencoba menggunakannya
     const itemId = item ? item.id : null;
+	const itemCode = item ? item.item_code : ''; // <-- BARU
     const itemName = item ? item.item_name : '';
     const itemQuantity = item ? item.quantity : 0;
+	const itemUnitType = item ? item.unit_type : 'pcs'; // <-- BARU
+	const itemCostPrice = item ? item.cost_price : 0; // <-- BARU
+    const itemSellingPrice = item ? item.selling_price : 0; // <-- BARU
     const itemPrice = item ? item.price : 0; // Pastikan 'price' ada di objek item
 
     // Debugging keberadaan elemen DOM
     console.log('Cek Elemen DOM:');
     console.log('editItemId:', editItemId);
+	console.log('editItemCode:', editItemCode); // <-- BARU
     console.log('editItemName:', editItemName);
     console.log('editQuantity:', editQuantity);
+	console.log('editUnitType:', editUnitType); // <-- BARU
+	console.log('editCostPrice:', editCostPrice); // <-- BARU
+    console.log('editSellingPrice:', editSellingPrice); // <-- BARU
     console.log('editPrice:', editPrice);
     console.log('editItemModal:', editItemModal);
 
@@ -465,6 +488,9 @@ if (editItemForm) {
         const itemId = editItemId ? editItemId.value : null;
         const itemName = editItemName ? editItemName.value.trim() : '';
         const quantity = editQuantity ? parseInt(editQuantity.value) : NaN;
+		const unitType = editUnitType ? editUnitType.value : ''; // <-- BARU
+		const costPrice = editCostPrice ? parseFloat(editCostPrice.value) : NaN; // <-- BARU
+        const sellingPrice = editSellingPrice ? parseFloat(editSellingPrice.value) : NaN; // <-- BARU
         const price = editPrice ? parseFloat(editPrice.value) : NaN;
 
         if (!itemId || !itemName || isNaN(quantity) || isNaN(price) || quantity < 0 || price < 0) {
@@ -709,12 +735,15 @@ cancelAddInventarisBtn.addEventListener('click', () => {
 saveInventarisBtn.addEventListener('click', async () => {
     const itemName = itemNameInput.value.trim();
     const itemQuantity = parseInt(itemQuantityInput.value);
-    const itemPrice = parseFloat(itemPriceInput.value);
+    const itemUnitType = itemUnitTypeInput.value; // Ambil nilai satuan
+    const itemCostPrice = parseFloat(itemCostPriceInput.value); // Ambil harga modal
+    const itemSellingPrice = parseFloat(itemSellingPriceInput.value); // Ambil harga jual
 
     inventarisFormMessage.textContent = '';
 
-    if (!itemName || isNaN(itemQuantity) || isNaN(itemPrice) || itemQuantity < 0 || itemPrice < 0) {
-        inventarisFormMessage.textContent = 'Semua bidang harus diisi dengan nilai yang valid.';
+    // Perbarui validasi
+    if (!itemName || isNaN(itemQuantity) || isNaN(itemCostPrice) || isNaN(itemSellingPrice) || itemQuantity < 0 || itemCostPrice < 0 || itemSellingPrice < 0) {
+        inventarisFormMessage.textContent = 'Semua bidang harus diisi dengan nilai yang valid (jumlah/harga tidak boleh negatif).';
         inventarisFormMessage.className = 'message error';
         return;
     }
@@ -741,14 +770,19 @@ saveInventarisBtn.addEventListener('click', async () => {
     }
 
     // --- KODE UNTUK MENYIMPAN INVENTARIS YANG BENAR ---
+    const newItemCode = generateUniqueItemCode(); // Buat kode item baru
+
     const { data, error } = await supabase
         .from('inventories')
         .insert([
             {
-                // user_id tidak perlu lagi dikirim, karena sudah ada DEFAULT VALUE auth.uid() di database
                 item_name: itemName,
                 quantity: itemQuantity,
-                price: itemPrice
+                unit_type: itemUnitType, // <-- Tambah satuan
+                cost_price: itemCostPrice, // <-- Tambah harga modal
+                selling_price: itemSellingPrice, // <-- Tambah harga jual
+                item_code: newItemCode // <-- Tambah kode item
+                // created_at dan last_updated seharusnya otomatis diurus oleh DB jika default valuenya NOW()
             }
         ]);
 
@@ -762,9 +796,10 @@ saveInventarisBtn.addEventListener('click', async () => {
         inventarisFormMessage.className = 'message success';
         itemNameInput.value = '';
         itemQuantityInput.value = '';
-        itemPriceInput.value = '';
+        itemUnitTypeInput.value = 'pcs'; // Reset ke default
+        itemCostPriceInput.value = '';
+        itemSellingPriceInput.value = '';
 
-        // Sembunyikan form dan tampilkan kembali tombol "Tambah Item" setelah berhasil
         addInventarisForm.style.display = 'none';
         addInventarisBtn.style.display = 'inline-block';
 

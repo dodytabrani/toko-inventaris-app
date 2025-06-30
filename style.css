@@ -247,3 +247,10 @@ table th {
 #cancelEditBtn:hover {
     background-color: #c82333;
 }
+/* Di style.css */
+.text-red {
+    color: red;
+}
+.text-green {
+    color: green;
+}
