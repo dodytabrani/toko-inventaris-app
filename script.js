@@ -154,12 +154,12 @@ async function checkLicenseStatus() {
         licenseStatusP.textContent = 'Lisensi Anda belum aktif. Hubungi admin untuk aktivasi.';
         licenseStatusP.className = 'message error';
         addInventarisBtn.style.display = 'none'; // Sembunyikan tombol tambah jika lisensi tidak aktif
-    } else if (!data.is_active || new Date(data.expiry_date) < new Date()) {
-        licenseStatusP.textContent = `Lisensi Anda tidak aktif atau sudah kadaluarsa pada ${new Date(data.expiry_date).toLocaleDateString()}.`;
+    } else if (!data.is_active || new Date(data.expires_at) < new Date()) {
+        licenseStatusP.textContent = `Lisensi Anda tidak aktif atau sudah kadaluarsa pada ${new Date(data.expires_at).toLocaleDateString()}.`;
         licenseStatusP.className = 'message error';
         addInventarisBtn.style.display = 'none'; // Sembunyikan tombol tambah jika lisensi tidak aktif/kadaluarsa
     } else {
-        licenseStatusP.textContent = `Lisensi Anda aktif hingga ${new Date(data.expiry_date).toLocaleDateString()}.`;
+        licenseStatusP.textContent = `Lisensi Anda aktif hingga ${new Date(data.expires_at).toLocaleDateString()}.`;
         licenseStatusP.className = 'message success';
         addInventarisBtn.style.display = 'inline-block'; // Tampilkan tombol tambah jika lisensi aktif
     }
