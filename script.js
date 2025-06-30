@@ -339,13 +339,20 @@ async function loadInventarisData() {
             inventarisDataDiv.innerHTML = html;
 
             // Tambahkan event listener untuk tombol edit/hapus setelah elemen dibuat
-            document.querySelectorAll('.edit-item-btn').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const itemId = e.target.dataset.id;
-                    // Logika edit item (akan ditambahkan nanti jika diperlukan)
-                    alert('Fungsi Edit Item ID: ' + itemId + ' (belum diimplementasikan penuh)');
-                });
-            });
+            document.querySelectorAll('.edit-item-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const itemId = e.target.dataset.id;
+                    // Logika edit item (akan ditambahkan nanti jika diperlukan)
+                    // Baris di bawah ini adalah yang diganti
+                    const itemToEdit = data.find(item => item.id === itemId);
+                    if (itemToEdit) {
+                        openEditModal(itemToEdit);
+                    } else {
+                        console.error('Item with ID not found:', itemId);
+                        alert('Gagal menemukan item untuk diedit.');
+                    }
+                });
+            });
 
             document.querySelectorAll('.delete-item-btn').forEach(button => {
                 button.addEventListener('click', async (e) => {
