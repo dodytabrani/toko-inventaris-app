@@ -5,48 +5,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aplikasi Inventaris Toko</title>
     <link rel="stylesheet" href="style.css">
-	<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <header>
         <h1>Aplikasi Inventaris Toko</h1>
         <nav>
-            <button id="loginBtn">Login</button>
-            <button id="logoutBtn" style="display: none;">Logout</button>
+            <button id="mainLoginBtn">Login/Daftar</button>
+            <button id="mainLogoutBtn" style="display: none;">Logout</button>
         </nav>
     </header>
 
     <main>
         <div id="auth-section" class="section">
-    <h2>Login / Daftar</h2>
-    <div>
-        <h3>Daftar Baru</h3>
-        <input type="email" id="signupEmail" placeholder="Email" required>
-        <input type="password" id="signupPassword" placeholder="Password" required>
-        <button id="signupBtn">Daftar</button> <p id="signupMessage" class="message"></p>
-    </div>
-</div>
+            <h2>Akses Aplikasi</h2>
+            <div>
+                <h3>Daftar Baru</h3>
+                <input type="email" id="signupEmail" placeholder="Email" required>
+                <input type="password" id="signupPassword" placeholder="Password" required>
+                <button id="signupBtn">Daftar</button>
+                <p id="signupMessage" class="message"></p>
+            </div>
+
+            <div>
+                <h3>Login Pengguna</h3>
+                <input type="email" id="loginEmail" placeholder="Email" required>
+                <input type="password" id="loginPassword" placeholder="Password" required>
+                <button id="loginBtn">Login</button>
+                <p id="loginMessage" class="message"></p>
+            </div>
+        </div>
 
         <section id="app-section" class="card" style="display: none;">
             <h2>Dashboard Inventaris</h2>
             <p>Selamat datang, <span id="userEmail"></span>!</p>
             <p id="license-status" class="message"></p>
+
+            <button id="addInventarisBtn">Tambah Item</button>
+
+            <div id="add-inventaris-form" style="display: none;" class="form-container">
+                <h3>Tambah Item Inventaris Baru</h3>
+                <input type="text" id="itemName" placeholder="Nama Item" required>
+                <input type="number" id="itemQuantity" placeholder="Jumlah" required>
+                <input type="number" id="itemPrice" placeholder="Harga Satuan" required>
+                <button id="saveInventarisBtn">Simpan Item</button>
+                <button id="cancelAddInventarisBtn">Batal</button>
+                <p id="inventaris-form-message" class="message"></p>
+            </div>
+
             <div id="inventaris-data">
                 <p>Memuat data inventaris...</p>
             </div>
-            <button id="addInventarisBtn">Tambah Item</button>
-        </section>
+
+            <button id="logoutBtn">Logout</button> </section>
 
         <section id="admin-login-section" class="card">
-            <h2>Login Admin Key</h2>
+            <h2>Login Admin</h2>
             <input type="email" id="adminEmail" placeholder="Email Admin">
             <input type="password" id="adminPassword" placeholder="Password Admin">
-            <button id="adminSignInBtn">Login Admin</button>
-            <p id="admin-auth-message" class="message"></p>
-        </section>
+            <button id="adminLoginBtn">Login Admin</button> <p id="adminLoginMessage" class="message"></p> </section>
 
         <section id="admin-panel-section" class="card" style="display: none;">
-            <h2>Panel Admin Key & Lisensi</h2>
+            <h2>Panel Admin Lisensi</h2>
+            <button id="refreshLicensesBtn">Refresh Data Lisensi</button>
             <div id="license-list">
                 <h3>Daftar Lisensi Pengguna</h3>
                 <p>Memuat daftar lisensi...</p>
@@ -54,15 +75,16 @@
                     <thead>
                         <tr>
                             <th>Email Pengguna</th>
-                            <th>Status Lisensi</th>
+                            <th>ID Lisensi</th>
+                            <th>Status</th>
                             <th>Kadaluarsa</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
-                    <tbody id="licensesTableBody">
-                        </tbody>
+                    <tbody id="licenses-table-body"> </tbody>
                 </table>
             </div>
+            <button id="adminLogoutBtn">Logout Admin</button>
         </section>
     </main>
 

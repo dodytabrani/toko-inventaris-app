@@ -6,11 +6,13 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // --- 2. REFERENSI ELEMEN HTML ---
+// Pastikan ID ini cocok persis dengan yang ada di index.html
 const authSection = document.getElementById('auth-section');
 const appSection = document.getElementById('app-section');
 const adminLoginSection = document.getElementById('admin-login-section');
 const adminPanelSection = document.getElementById('admin-panel-section');
 
+// Autentikasi
 const signupEmailInput = document.getElementById('signupEmail');
 const signupPasswordInput = document.getElementById('signupPassword');
 const signupBtn = document.getElementById('signupBtn');
@@ -18,26 +20,30 @@ const signupMessage = document.getElementById('signupMessage');
 
 const loginEmailInput = document.getElementById('loginEmail');
 const loginPasswordInput = document.getElementById('loginPassword');
-const loginBtn = document.getElementById('loginBtn');
+const loginBtn = document.getElementById('loginBtn'); // Untuk tombol login di form
 const loginMessage = document.getElementById('loginMessage');
 
-const logoutBtn = document.getElementById('logoutBtn');
+const mainLoginBtn = document.getElementById('mainLoginBtn'); // Tombol Login/Daftar di header
+const mainLogoutBtn = document.getElementById('mainLogoutBtn'); // Tombol Logout di header
+
+const logoutBtn = document.getElementById('logoutBtn'); // Tombol Logout di app-section
 const userEmailSpan = document.getElementById('userEmail');
 const licenseStatusP = document.getElementById('license-status');
 
+// Admin
 const adminEmailInput = document.getElementById('adminEmail');
 const adminPasswordInput = document.getElementById('adminPassword');
-const adminLoginBtn = document.getElementById('adminLoginBtn');
-const adminLoginMessage = document.getElementById('adminLoginMessage');
+const adminLoginBtn = document.getElementById('adminLoginBtn'); // ID diperbaiki
+const adminLoginMessage = document.getElementById('adminLoginMessage'); // ID diperbaiki
 
-const licensesTableBody = document.getElementById('licenses-table-body');
+const licensesTableBody = document.getElementById('licenses-table-body'); // ID diperbaiki
 const adminLogoutBtn = document.getElementById('adminLogoutBtn');
 const refreshLicensesBtn = document.getElementById('refreshLicensesBtn');
 
+// Inventaris User
 const inventarisDataDiv = document.getElementById('inventaris-data');
 const addInventarisBtn = document.getElementById('addInventarisBtn');
 
-// Referensi baru untuk form inventaris
 const addInventarisForm = document.getElementById('add-inventaris-form');
 const itemNameInput = document.getElementById('itemName');
 const itemQuantityInput = document.getElementById('itemQuantity');
@@ -61,6 +67,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         appSection.style.display = 'none';
         adminPanelSection.style.display = 'none';
         adminLoginSection.style.display = 'block'; // Tampilkan juga form admin login
+        mainLoginBtn.style.display = 'inline-block';
+        mainLogoutBtn.style.display = 'none';
     }
 });
 
@@ -98,6 +106,9 @@ async function showUserApp() {
     adminPanelSection.style.display = 'none';
     appSection.style.display = 'block';
     addInventarisForm.style.display = 'none'; // Pastikan form inventaris tersembunyi
+    mainLoginBtn.style.display = 'none';
+    mainLogoutBtn.style.display = 'inline-block';
+
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
         userEmailSpan.textContent = user.email;
@@ -112,6 +123,9 @@ async function showAdminPanel() {
     adminLoginSection.style.display = 'none';
     appSection.style.display = 'none';
     adminPanelSection.style.display = 'block';
+    mainLoginBtn.style.display = 'none';
+    mainLogoutBtn.style.display = 'inline-block'; // Admin juga bisa logout dari header
+
     await loadLicensesData();
 }
 
@@ -229,7 +243,7 @@ async function extendLicense(licenseId) {
         .eq('id', licenseId);
 
     if (updateError) {
-        console.error("Error extending license:", updateError.message);
+        console.error("Error memperpanjang lisensi:", updateError.message);
         alert('Gagal memperpanjang lisensi: ' + updateError.message);
     } else {
         alert('Lisensi berhasil diperpanjang 1 bulan.');
@@ -248,7 +262,7 @@ async function deleteLicense(licenseId) {
         .eq('id', licenseId);
 
     if (error) {
-        console.error("Error deleting license:", error.message);
+        console.error("Error menghapus lisensi:", error.message);
         alert('Gagal menghapus lisensi: ' + error.message);
     } else {
         alert('Lisensi berhasil dihapus.');
@@ -259,7 +273,11 @@ async function deleteLicense(licenseId) {
 // Muat Data Inventaris
 async function loadInventarisData() {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return; // Pastikan user login
+    if (!user) {
+        inventarisDataDiv.innerHTML = '<p>Anda harus login untuk melihat inventaris.</p>';
+        addInventarisBtn.style.display = 'none';
+        return;
+    }
 
     // Cek lagi status lisensi, kalau belum aktif, jangan muat data
     const { data: license } = await supabase
@@ -269,7 +287,7 @@ async function loadInventarisData() {
         .single();
 
     if (!license || !license.is_active || new Date(license.expiry_date) < new Date()) {
-        inventarisDataDiv.innerHTML = '<p>Akses inventaris ditolak: Lisensi tidak aktif/kadaluarsa.</p>';
+        inventarisDataDiv.innerHTML = '<p>Akses inventaris ditolak: Lisensi tidak aktif atau sudah kadaluarsa.</p>';
         addInventarisBtn.style.display = 'none'; // Sembunyikan tombol tambah jika lisensi tidak aktif
         return;
     } else {
@@ -320,13 +338,68 @@ async function loadInventarisData() {
             `;
             inventarisDataDiv.innerHTML = html;
 
-            // TODO: Tambahkan event listener untuk tombol edit/hapus di langkah selanjutnya
+            // Tambahkan event listener untuk tombol edit/hapus setelah elemen dibuat
+            document.querySelectorAll('.edit-item-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const itemId = e.target.dataset.id;
+                    // Logika edit item (akan ditambahkan nanti jika diperlukan)
+                    alert('Fungsi Edit Item ID: ' + itemId + ' (belum diimplementasikan penuh)');
+                });
+            });
+
+            document.querySelectorAll('.delete-item-btn').forEach(button => {
+                button.addEventListener('click', async (e) => {
+                    const itemId = e.target.dataset.id;
+                    if (confirm('Anda yakin ingin menghapus item ini?')) {
+                        const { error: deleteError } = await supabase
+                            .from('inventories')
+                            .delete()
+                            .eq('id', itemId);
+
+                        if (deleteError) {
+                            console.error("Error deleting item:", deleteError.message);
+                            alert('Gagal menghapus item: ' + deleteError.message);
+                        } else {
+                            alert('Item berhasil dihapus.');
+                            await loadInventarisData(); // Muat ulang data
+                        }
+                    }
+                });
+            });
         }
     }
 }
 
 
 // --- 4. EVENT LISTENERS ---
+
+// Tombol Login/Daftar Utama (Header)
+mainLoginBtn.addEventListener('click', () => {
+    authSection.style.display = 'block';
+    appSection.style.display = 'none';
+    adminPanelSection.style.display = 'none';
+    adminLoginSection.style.display = 'block'; // Tampilkan juga form admin login
+    mainLoginBtn.style.display = 'none';
+    mainLogoutBtn.style.display = 'none';
+});
+
+// Tombol Logout Utama (Header)
+mainLogoutBtn.addEventListener('click', async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+        console.error("Logout error:", error.message);
+        alert('Gagal logout: ' + error.message);
+    } else {
+        alert('Logout berhasil!');
+        // Kembali ke halaman autentikasi
+        authSection.style.display = 'block';
+        appSection.style.display = 'none';
+        adminPanelSection.style.display = 'none';
+        adminLoginSection.style.display = 'block';
+        mainLoginBtn.style.display = 'inline-block';
+        mainLogoutBtn.style.display = 'none';
+    }
+});
 
 // Daftar User
 signupBtn.addEventListener('click', async () => {
@@ -356,7 +429,6 @@ signupBtn.addEventListener('click', async () => {
 
         if (userInsertError) {
             console.error("Error inserting into public.users:", userInsertError.message);
-            // Anda bisa tambahkan logik rollback atau pesan error ke user di sini
             signupMessage.textContent = 'Daftar berhasil tapi gagal menyimpan profil user. Harap hubungi admin.';
             signupMessage.className = 'message error';
         } else {
@@ -364,6 +436,8 @@ signupBtn.addEventListener('click', async () => {
             signupMessage.className = 'message success';
             signupEmailInput.value = '';
             signupPasswordInput.value = '';
+            // Setelah daftar berhasil, langsung coba login atau tampilkan UI yang sesuai
+            // await checkUserRoleAndRedirect(data.user); // Opsional: langsung login
         }
     } else {
         // Ini mungkin terjadi jika email confirmation diaktifkan dan user belum konfirmasi
@@ -402,7 +476,7 @@ loginBtn.addEventListener('click', async () => {
     }
 });
 
-// Logout User
+// Logout User dari App Section
 logoutBtn.addEventListener('click', async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
@@ -414,7 +488,9 @@ logoutBtn.addEventListener('click', async () => {
         authSection.style.display = 'block';
         appSection.style.display = 'none';
         adminPanelSection.style.display = 'none';
-        adminLoginSection.style.display = 'block'; // Tampilkan juga form admin login
+        adminLoginSection.style.display = 'block';
+        mainLoginBtn.style.display = 'inline-block';
+        mainLogoutBtn.style.display = 'none';
     }
 });
 
@@ -472,6 +548,8 @@ adminLogoutBtn.addEventListener('click', async () => {
         appSection.style.display = 'none';
         adminPanelSection.style.display = 'none';
         adminLoginSection.style.display = 'block';
+        mainLoginBtn.style.display = 'inline-block';
+        mainLogoutBtn.style.display = 'none';
     }
 });
 
