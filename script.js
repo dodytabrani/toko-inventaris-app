@@ -609,27 +609,26 @@ saveInventarisBtn.addEventListener('click', async () => {
     }
 
 
-    // Pastikan variabel itemName, itemQuantity, dan itemPrice sudah terdefinisi
-// dan berisi nilai yang benar dari input form.
+   // ... kode lainnya sebelum baris 626 (asumsi) ...
 
 const { data, error } = await supabase
     .from('inventories')
     .insert([
         {
-            // user_id: user.id, // <-- HAPUS BARIS INI
             item_name: itemName,
             quantity: itemQuantity,
-            price: itemPrice
-        }
-    ]);
+            price: itemPrice // <--- Pastikan TIDAK ADA KOMA di sini jika ini item terakhir
+        } // <--- Pastikan kurung kurawal ini ada dan benar
+    ]); // <--- Pastikan kurung siku dan kurung tutup ini ada dan benar
 
-if (error) {
+if (error) { // <--- Baris 633 kemungkinan di sini atau di baris sebelumnya
     console.error("Error saving inventory item:", error.message);
     // Tampilkan pesan error ke pengguna di UI jika perlu
 } else {
     console.log("Inventory item saved successfully:", data);
     // Lakukan sesuatu setelah item tersimpan, misalnya refresh daftar inventaris
 }
+
     } else {
         inventarisFormMessage.textContent = 'Item berhasil disimpan!';
         inventarisFormMessage.className = 'message success';
