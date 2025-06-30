@@ -608,46 +608,34 @@ saveInventarisBtn.addEventListener('click', async () => {
         return;
     }
 
+    // --- KODE UNTUK MENYIMPAN INVENTARIS YANG BENAR ---
+    const { data, error } = await supabase
+        .from('inventories')
+        .insert([
+            {
+                // user_id tidak perlu lagi dikirim, karena sudah ada DEFAULT VALUE auth.uid() di database
+                item_name: itemName,
+                quantity: itemQuantity,
+                price: itemPrice
+            }
+        ]);
 
-   // ... kode lainnya sebelum baris 626 (asumsi) ...
+    if (error) {
+        console.error("Error saving inventory item:", error.message);
+        inventarisFormMessage.textContent = 'Error: Gagal menyimpan item inventaris. ' + error.message;
+        inventarisFormMessage.className = 'message error';
+    } else {
+        console.log("Inventory item saved successfully:", data);
+        inventarisFormMessage.textContent = 'Item berhasil disimpan!';
+        inventarisFormMessage.className = 'message success';
+        itemNameInput.value = '';
+        itemQuantityInput.value = '';
+        itemPriceInput.value = '';
 
-// PASTIKAN ANDA BERADA DI DALAM FUNGSI ASYNC ATAU EVENT LISTENER ASYNC
-// (Misalnya, jika ini bagian dari addEventListener('submit', async (e) => { ... });)
+        // Sembunyikan form dan tampilkan kembali tombol "Tambah Item" setelah berhasil
+        addInventarisForm.style.display = 'none';
+        addInventarisBtn.style.display = 'inline-block';
 
-// Pastikan variabel itemName, itemQuantity, dan itemPrice sudah terdefinisi
-// dan berisi nilai yang benar dari input form.
-// Pastikan juga inventarisFormMessage, itemNameInput, itemQuantityInput, itemPriceInput,
-// addInventarisForm, addInventarisBtn sudah dideklarasikan dan diakses dengan benar.
-// Dan pastikan fungsi loadInventarisData() tersedia.
-
-const { data, error } = await supabase
-    .from('inventories')
-    .insert([
-        {
-            // user_id: user.id, // <-- BARIS INI DIHAPUS UNTUK MENGGUNAKAN DEFAULT VALUE auth.uid()
-            item_name: itemName,
-            quantity: itemQuantity,
-            price: itemPrice
-        }
-    ]);
-
-if (error) {
-    console.error("Error saving inventory item:", error.message);
-    inventarisFormMessage.textContent = 'Error: Gagal menyimpan item inventaris. ' + error.message; // Menampilkan pesan error dari Supabase
-    inventarisFormMessage.className = 'message error';
-} else {
-    console.log("Inventory item saved successfully:", data);
-    inventarisFormMessage.textContent = 'Item berhasil disimpan!';
-    inventarisFormMessage.className = 'message success';
-    itemNameInput.value = ''; // Kosongkan input
-    itemQuantityInput.value = ''; // Kosongkan input
-    itemPriceInput.value = ''; // Kosongkan input
-
-    // Sembunyikan form dan tampilkan kembali tombol "Tambah Item" setelah berhasil
-    addInventarisForm.style.display = 'none';
-    addInventarisBtn.style.display = 'inline-block';
-
-    await loadInventarisData(); // Muat ulang data inventaris untuk menampilkan yang baru
-}
-// }); // <--- PENTING: Jika ada '});' di sini untuk menutup event listener Anda, biarkan TETAP ADA.
-       //       Jika tidak ada, jangan tambahkan.
+        await loadInventarisData(); // Muat ulang data inventaris untuk menampilkan yang baru
+    }
+}); // <-- PASTIKAN INI ADA DAN TIDAK DIKOMENTARI
