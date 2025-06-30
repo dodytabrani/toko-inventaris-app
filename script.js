@@ -52,6 +52,16 @@ const saveInventarisBtn = document.getElementById('saveInventarisBtn');
 const cancelAddInventarisBtn = document.getElementById('cancelAddInventarisBtn');
 const inventarisFormMessage = document.getElementById('inventaris-form-message');
 
+// --- Referensi Elemen Modal Edit ---
+const editItemModal = document.getElementById('editItemModal');
+const closeEditModalBtn = document.querySelector('#editItemModal .close-button');
+const cancelEditBtn = document.getElementById('cancelEditBtn');
+const editItemForm = document.getElementById('editItemForm');
+const editItemId = document.getElementById('editItemId');
+const editItemName = document.getElementById('editItemName');
+const editQuantity = document.getElementById('editQuantity');
+const editPrice = document.getElementById('editPrice');
+
 
 // --- 3. FUNGSI UTAMA ---
 
@@ -339,21 +349,19 @@ async function loadInventarisData() {
             inventarisDataDiv.innerHTML = html;
 
             // Tambahkan event listener untuk tombol edit/hapus setelah elemen dibuat
-            document.querySelectorAll('.edit-item-btn').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const itemId = e.target.dataset.id;
-                    // Logika edit item (akan ditambahkan nanti jika diperlukan)
-                    // Baris di bawah ini adalah yang diganti
-                    const itemToEdit = data.find(item => item.id === itemId);
-                    if (itemToEdit) {
-	                    console.log('Item ditemukan:', itemToEdit); // TAMBAH INI
-                        openEditModal(itemToEdit);
-                    } else {
-                        console.error('Item with ID not found:', itemId);
-                        alert('Gagal menemukan item untuk diedit.');
-                    }
-                });
-            });
+            document.querySelectorAll('.edit-item-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const itemId = e.target.dataset.id;
+                    const itemToEdit = data.find(item => item.id === itemId);
+                    if (itemToEdit) {
+                        console.log('Item ditemukan:', itemToEdit);
+                        openEditModal(itemToEdit);
+                    } else {
+                        console.error('Item with ID not found:', itemId);
+                        alert('Gagal menemukan item untuk diedit.'); // Alert ini hanya untuk kasus error, bukan pop-up biasa.
+                    }
+                });
+            });
 
             document.querySelectorAll('.delete-item-btn').forEach(button => {
                 button.addEventListener('click', async (e) => {
@@ -378,8 +386,78 @@ async function loadInventarisData() {
     }
 }
 
+// --- FUNGSI MODAL EDIT ITEM ---
+function openEditModal(item) {
+    console.log('Memanggil openEditModal dengan item:', item);
+    if (editItemId) editItemId.value = item.id;
+    if (editItemName) editItemName.value = item.item_name;
+    if (editQuantity) editQuantity.value = item.quantity;
+    if (editPrice) editPrice.value = item.price; // Pastikan ini mengacu ke item.price
 
-// --- 4. EVENT LISTENERS ---
+    if (editItemModal) editItemModal.style.display = 'flex'; // Mengubah display ke 'flex'
+    console.log('Modal display set to flex.');
+}
+
+// --- EVENT LISTENERS MODAL EDIT ITEM ---
+if (closeEditModalBtn) {
+    closeEditModalBtn.onclick = () => {
+        if (editItemModal) editItemModal.style.display = 'none';
+        console.log('Modal ditutup via tombol X.');
+    };
+}
+
+if (cancelEditBtn) {
+    cancelEditBtn.onclick = () => {
+        if (editItemModal) editItemModal.style.display = 'none';
+        console.log('Modal ditutup via tombol Batal.');
+    };
+}
+
+if (editItemForm) {
+    editItemForm.onsubmit = async (e) => {
+        e.preventDefault();
+        const itemId = editItemId ? editItemId.value : null;
+        const itemName = editItemName ? editItemName.value.trim() : '';
+        const quantity = editQuantity ? parseInt(editQuantity.value) : NaN;
+        const price = editPrice ? parseFloat(editPrice.value) : NaN;
+
+        if (!itemId || !itemName || isNaN(quantity) || isNaN(price) || quantity < 0 || price < 0) {
+            alert('Semua bidang harus diisi dengan nilai yang valid (jumlah/harga tidak boleh negatif).');
+            return;
+        }
+
+        try {
+            const { data: { user } } = await supabase.auth.getUser(); 
+            if (!user) {
+                alert('Anda harus login untuk memperbarui item.');
+                return;
+            }
+
+            const { data, error } = await supabase
+                .from('inventories')
+                .update({
+                    item_name: itemName,
+                    quantity: quantity,
+                    price: price,
+                    last_updated: new Date().toISOString()
+                })
+                .eq('id', itemId)
+                .eq('user_id', user.id); // Penting: Pastikan user_id cocok
+
+            if (error) throw error;
+
+            alert('Item inventaris berhasil diperbarui!');
+            if (editItemModal) editItemModal.style.display = 'none';
+            await loadInventarisData(); // Muat ulang data setelah update
+        } catch (error) {
+            console.error('Error updating inventory item:', error.message);
+            alert('Gagal memperbarui item inventaris: ' + error.message);
+        }
+    };
+}
+
+
+// --- 4. EVENT LISTENERS UTAMA (NON-MODAL) ---
 
 // Tombol Login/Daftar Utama (Header)
 mainLoginBtn.addEventListener('click', () => {
@@ -646,29 +724,4 @@ saveInventarisBtn.addEventListener('click', async () => {
 
         await loadInventarisData(); // Muat ulang data inventaris untuk menampilkan yang baru
     }
-}); // <-- PASTIKAN INI ADA DAN TIDAK DIKOMENTARI
-// --- Modal Edit Item ---
-const editItemModal = document.getElementById('editItemModal');
-const closeEditModalBtn = document.querySelector('#editItemModal .close-button');
-const cancelEditBtn = document.getElementById('cancelEditBtn');
-const editItemForm = document.getElementById('editItemForm');
-const editItemId = document.getElementById('editItemId');
-const editItemName = document.getElementById('editItemName');
-const editQuantity = document.getElementById('editQuantity');
-const editPrice = document.getElementById('editPrice');
-
-function openEditModal(item) {
-    // ... (seluruh isi fungsi) ...
-}
-
-if (closeEditModalBtn) {
-    // ... (seluruh isi event listener) ...
-}
-if (cancelEditBtn) {
-    // ... (seluruh isi event listener) ...
-}
-
-if (editItemForm) {
-    // ... (seluruh isi event listener onsubmit) ...
-}
-// --- Akhir dari Modal Edit Item ---
+});
