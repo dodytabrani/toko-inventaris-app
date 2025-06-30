@@ -152,35 +152,37 @@ table th {
     font-weight: bold;
 }
 
-/* --- REVISI PENTING UNTUK MODAL DIMULAI DI SINI --- */
+/* Pastikan Anda memiliki CSS ini untuk modal Anda */
+
 .modal {
-    display: none; /* TETAP none secara default, JS akan mengubahnya menjadi 'flex' */
-    position: fixed; /* Tetap di viewport */
-    z-index: 1000; /* Pastikan di atas elemen lain */
+    display: none; /* INI PENTING: Sembunyikan secara default. JS akan mengubahnya ke 'flex' */
+    position: fixed; /* Membuat modal tetap di posisi yang sama di viewport */
+    z-index: 1000; /* INI PENTING: Pastikan modal muncul di atas elemen lain */
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto; /* Aktifkan scroll jika konten terlalu panjang */
-    background-color: rgba(0,0,0,0.6); /* Background semi-transparan gelap */
-    /* Gunakan flexbox untuk centering ketika modal ditampilkan */
-    justify-content: center; /* Pusatkan secara horizontal */
-    align-items: center; /* Pusatkan secara vertikal */
+    overflow: auto; /* Memungkinkan scroll jika konten modal terlalu panjang */
+    background-color: rgba(0,0,0,0.6); /* Latar belakang hitam transparan */
+
+    /* Ini adalah untuk centering modal ketika display diubah menjadi 'flex' oleh JS */
+    justify-content: center; 
+    align-items: center; 
 }
 
 .modal-content {
-    background-color: #fefefe;
-    /* margin: 15% auto; <--- HAPUS BARIS INI JIKA MENGGUNAKAN flexbox centering di .modal */
+    background-color: #fefefe; /* Warna latar belakang modal */
     padding: 20px;
     border: 1px solid #888;
     width: 90%; /* Lebar modal */
-    max-width: 500px; /* Batasi lebar maksimal */
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3); /* Sedikit bayangan lebih baik */
-    border-radius: 8px;
-    position: relative; /* Penting untuk posisi absolut tombol close */
+    max-width: 500px; /* Lebar maksimal modal */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3); /* Efek bayangan */
+    border-radius: 8px; /* Sudut membulat */
+    position: relative; /* INI PENTING: Untuk positioning absolut tombol close di dalamnya */
+    /* margin: 15% auto; <-- Jika ada baris ini, HAPUS. Centering sudah di handle oleh flexbox di .modal */
 }
 
-/* Animasi (opsional) */
+/* Animasi (opsional, tapi bagus jika ada) */
 @keyframes animatetop {
     from {top: -300px; opacity: 0}
     to {top: 0; opacity: 1}
@@ -188,10 +190,10 @@ table th {
 
 .close-button {
     color: #aaa;
-    /* float: right; <--- HAPUS BARIS INI, ganti dengan position: absolute */
+    /* float: right; <-- Jika ada baris ini, HAPUS. */
     font-size: 28px;
     font-weight: bold;
-    position: absolute; /* Posisikan absolut di dalam modal-content */
+    position: absolute; /* INI PENTING: Posisi tombol close di dalam modal-content */
     top: 10px; /* Jarak dari atas modal-content */
     right: 20px; /* Jarak dari kanan modal-content */
     cursor: pointer;
@@ -201,4 +203,20 @@ table th {
 .close-button:focus {
     color: #000;
     text-decoration: none;
+}
+
+/* Pastikan juga Anda punya styling dasar untuk input di dalam modal, misal: */
+.modal-content input[type="text"],
+.modal-content input[type="number"] {
+    width: calc(100% - 20px); /* Adjust as needed */
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.modal-content button {
+    padding: 10px 20px;
+    margin-right: 10px;
+    border-radius: 5px;
 }
