@@ -47,7 +47,13 @@ const addInventarisBtn = document.getElementById('addInventarisBtn');
 const addInventarisForm = document.getElementById('add-inventaris-form');
 const itemNameInput = document.getElementById('itemName');
 const itemQuantityInput = document.getElementById('itemQuantity');
-const itemPriceInput = document.getElementById('itemPrice');
+
+// HAPUS BARIS INI: const itemPriceInput = document.getElementById('itemPrice');
+// GANTI DENGAN YANG BARU INI:
+const itemUnitTypeInput = document.getElementById('itemUnitType'); // <-- BARU: PASTIKAN INI ADA
+const itemCostPriceInput = document.getElementById('itemCostPrice'); // <-- BARU: PASTIKAN INI ADA
+const itemSellingPriceInput = document.getElementById('itemSellingPrice'); // <-- BARU: PASTIKAN INI ADA (ini menggantikan itemPriceInput)
+
 const saveInventarisBtn = document.getElementById('saveInventarisBtn');
 const cancelAddInventarisBtn = document.getElementById('cancelAddInventarisBtn');
 const inventarisFormMessage = document.getElementById('inventaris-form-message');
@@ -58,13 +64,13 @@ const closeEditModalBtn = document.querySelector('#editItemModal .close-button')
 const cancelEditBtn = document.getElementById('cancelEditBtn');
 const editItemForm = document.getElementById('editItemForm');
 const editItemId = document.getElementById('editItemId');
-const editItemCode = document.getElementById('editItemCode'); // <-- BARU
+const editItemCode = document.getElementById('editItemCode'); // <-- Sudah benar
 const editItemName = document.getElementById('editItemName');
 const editQuantity = document.getElementById('editQuantity');
-const editUnitType = document.getElementById('editUnitType'); // <-- BARU
-const editCostPrice = document.getElementById('editCostPrice'); // <-- BARU
-// const editPrice = document.getElementById('editPrice'); // <--- Ini mungkin perlu diganti atau dihapus jika Anda mengganti id-nya di HTML
-const editSellingPrice = document.getElementById('editSellingPrice'); // <-- BARU
+const editUnitType = document.getElementById('editUnitType'); // <-- Sudah benar
+const editCostPrice = document.getElementById('editCostPrice'); // <-- Sudah benar
+// const editPrice = document.getElementById('editPrice'); // <-- Ini sudah benar dikomentari/dihapus
+const editSellingPrice = document.getElementById('editSellingPrice'); // <-- Sudah benar
 
 // --- Fungsi Pembantu ---
 function generateUniqueItemCode() {
@@ -76,8 +82,6 @@ function generateUniqueItemCode() {
     }
     return result;
 }
-
-
 // --- 3. FUNGSI UTAMA ---
 
 // Cek Status Autentikasi Saat Memuat Halaman
@@ -714,13 +718,18 @@ adminLogoutBtn.addEventListener('click', async () => {
 refreshLicensesBtn.addEventListener('click', loadLicensesData);
 
 
-// Event listener untuk tombol "Tambah Item"
+/// Event listener untuk tombol "Tambah Item"
 addInventarisBtn.addEventListener('click', () => {
     addInventarisForm.style.display = 'block'; // Tampilkan form
     addInventarisBtn.style.display = 'none'; // Sembunyikan tombol "Tambah Item"
-    itemNameInput.value = ''; // Kosongkan input
+    
+    // Kosongkan dan reset semua input form tambah item
+    itemNameInput.value = '';
     itemQuantityInput.value = '';
-    itemPriceInput.value = '';
+    itemUnitTypeInput.value = 'pcs'; // Atur nilai default 'pcs'
+    itemCostPriceInput.value = '';
+    itemSellingPriceInput.value = '';
+    
     inventarisFormMessage.textContent = ''; // Kosongkan pesan
     inventarisFormMessage.className = 'message';
 });
