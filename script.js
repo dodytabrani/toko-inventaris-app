@@ -58,34 +58,21 @@ const saveInventarisBtn = document.getElementById('saveInventarisBtn');
 const cancelAddInventarisBtn = document.getElementById('cancelAddInventarisBtn');
 const inventarisFormMessage = document.getElementById('inventaris-form-message');
 
-// --- Referensi Elemen Modal Edit (VERIFIKASI INI HANYA UNTUK MEMASTIKAN ANDA SUDAH MEMILIKI INI) ---
-// Pastikan baris ini ada di bagian atas script.js Anda,
-// bersama dengan semua deklarasi const lainnya.
+// --- Referensi Elemen Modal Edit ---
 const editItemModal = document.getElementById('editItemModal');
 const closeEditModalBtn = document.querySelector('#editItemModal .close-button');
 const cancelEditBtn = document.getElementById('cancelEditBtn');
 const editItemForm = document.getElementById('editItemForm');
 const editItemId = document.getElementById('editItemId');
-const editItemCode = document.getElementById('editItemCode');
+const editItemCode = document.getElementById('editItemCode'); // <-- Sudah benar
 const editItemName = document.getElementById('editItemName');
 const editQuantity = document.getElementById('editQuantity');
-const editUnitType = document.getElementById('editUnitType');
-const editCostPrice = document.getElementById('editCostPrice');
-const editSellingPrice = document.getElementById('editSellingPrice');
+const editUnitType = document.getElementById('editUnitType'); // <-- Sudah benar
+const editCostPrice = document.getElementById('editCostPrice'); // <-- Sudah benar
+// const editPrice = document.getElementById('editPrice'); // <-- Ini sudah benar dikomentari/dihapus
+const editSellingPrice = document.getElementById('editSellingPrice'); // <-- Sudah benar
 
-// --- Referensi Elemen Form Tambah Item (VERIFIKASI INI JUGA) ---
-// Pastikan ini juga ada di bagian atas script.js Anda
-const itemNameInput = document.getElementById('itemName');
-const itemQuantityInput = document.getElementById('itemQuantity');
-const itemUnitTypeInput = document.getElementById('itemUnitType');
-const itemCostPriceInput = document.getElementById('itemCostPrice');
-const itemSellingPriceInput = document.getElementById('itemSellingPrice');
-const saveInventarisBtn = document.getElementById('saveInventarisBtn');
-const inventarisFormMessage = document.getElementById('inventaris-form-message');
-const inventarisTableBody = document.getElementById('inventarisTableBody');
-
-
-// --- Fungsi Pembantu (Ini sudah benar, tidak perlu diubah) ---
+// --- Fungsi Pembantu ---
 function generateUniqueItemCode() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let result = '';
@@ -95,356 +82,25 @@ function generateUniqueItemCode() {
     }
     return result;
 }
+// --- 3. FUNGSI UTAMA ---
 
-// Fungsi untuk format mata uang
-function formatCurrency(amount) {
-    return new Intl.NumberFormat('id-ID', {
-        style: 'currency',
-        currency: 'IDR',
-        minimumFractionDigits: 0
-    }).format(amount);
-}
-
-// --- FUNGSI UTAMA (Diperbarui) ---
-
-// Fungsi untuk memuat data inventaris
-async function loadInventarisData() {
-    console.log("Memuat data inventaris...");
-    inventarisTableBody.innerHTML = '<tr><td colspan="8">Memuat data...</td></tr>';
-    try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-            console.log('Pengguna belum login saat memuat data inventaris.');
-            inventarisTableBody.innerHTML = '<tr><td colspan="8">Silakan login untuk melihat inventaris.</td></tr>';
-            return;
-        }
-
-        const { data, error } = await supabase
-            .from('inventories')
-            .select('*')
-            .eq('user_id', user.id);
-
-        if (error) {
-            console.error('Error memuat data inventaris:', error.message);
-            inventarisTableBody.innerHTML = `<tr><td colspan="8">Gagal memuat data: ${error.message}</td></tr>`;
-            return;
-        }
-
-        inventarisTableBody.innerHTML = ''; // Kosongkan tabel
-        if (data.length === 0) {
-            inventarisTableBody.innerHTML = '<tr><td colspan="8">Belum ada item di inventaris Anda.</td></tr>';
-        } else {
-            data.forEach(item => {
-                const row = document.createElement('tr');
-
-                // Hitung keuntungan per item
-                const profitPerItem = item.selling_price - item.cost_price;
-
-                row.innerHTML = `
-                    <td>${item.item_code || 'N/A'}</td>
-                    <td>${item.item_name}</td>
-                    <td>${item.quantity}</td>
-                    <td>${item.unit_type || 'pcs'}</td>
-                    <td>${formatCurrency(item.cost_price || 0)}</td>
-                    <td>${formatCurrency(item.selling_price || 0)}</td>
-                    <td>${formatCurrency(profitPerItem || 0)}</td>
-                    <td>
-                        <button class="btn btn-info btn-sm edit-btn" data-id="${item.id}">Edit</button>
-                        <button class="btn btn-danger btn-sm delete-btn" data-id="${item.id}">Hapus</button>
-                    </td>
-                `;
-                inventarisTableBody.appendChild(row);
-            });
-
-            // Tambahkan event listener untuk tombol edit dan hapus
-            document.querySelectorAll('.edit-btn').forEach(button => {
-                button.addEventListener('click', (e) => openEditModal(e.target.dataset.id));
-            });
-            document.querySelectorAll('.delete-btn').forEach(button => {
-                button.addEventListener('click', (e) => deleteInventoryItem(e.target.dataset.id));
-            });
-        }
-        console.log('Data inventaris berhasil dimuat.');
-    } catch (error) {
-        console.error('Error tak terduga saat memuat data inventaris:', error.message);
-        inventarisTableBody.innerHTML = `<tr><td colspan="8">Terjadi kesalahan: ${error.message}</td></tr>`;
+// Cek Status Autentikasi Saat Memuat Halaman
+document.addEventListener('DOMContentLoaded', async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+        // Jika user sudah login, cek peran
+        await checkUserRoleAndRedirect(user);
+    } else {
+        // Jika belum login, tampilkan halaman autentikasi
+        authSection.style.display = 'block';
+        appSection.style.display = 'none';
+        adminPanelSection.style.display = 'none';
+        adminLoginSection.style.display = 'block'; // Tampilkan juga form admin login
+        mainLoginBtn.style.display = 'inline-block';
+        mainLogoutBtn.style.display = 'none';
     }
-}
+});
 
-// Fungsi untuk membuka modal edit
-async function openEditModal(itemId) {
-    console.log("--- openEditModal Dipanggil ---");
-    try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-            alert('Anda harus login untuk mengedit item.');
-            return;
-        }
-
-        const { data: item, error } = await supabase
-            .from('inventories')
-            .select('*')
-            .eq('id', itemId)
-            .eq('user_id', user.id)
-            .single();
-
-        if (error) {
-            console.error('Error mengambil item untuk diedit:', error.message);
-            alert('Gagal mengambil item untuk diedit: ' + error.message);
-            return;
-        }
-
-        if (!item) {
-            alert('Item tidak ditemukan atau Anda tidak memiliki izin untuk mengeditnya.');
-            return;
-        }
-        console.log("Item ditemukan:", item);
-
-        console.log("Item yang diterima:", item);
-
-        // Debugging: Cek apakah elemen DOM ada sebelum mencoba menggunakannya
-        console.log("Cek Elemen DOM:");
-        console.log("editItemId:", editItemId);
-        console.log("editItemCode:", editItemCode);
-        console.log("editItemName:", editItemName);
-        console.log("editQuantity:", editQuantity);
-        console.log("editUnitType:", editUnitType);
-        console.log("editCostPrice:", editCostPrice);
-        console.log("editSellingPrice:", editSellingPrice);
-        console.log("editItemModal:", editItemModal);
-
-        // Mengisi formulir modal edit dengan data item
-        if (editItemId) {
-            editItemId.value = item.id;
-            console.log("Set editItemId.value to:", item.id);
-        }
-        if (editItemCode) {
-            editItemCode.value = item.item_code || ''; // Pastikan mengisi item_code
-            console.log("Set editItemCode.value to:", item.item_code);
-        }
-        if (editItemName) {
-            editItemName.value = item.item_name;
-            console.log("Set editItemName.value to:", item.item_name);
-        }
-        if (editQuantity) {
-            editQuantity.value = item.quantity;
-            console.log("Set editQuantity.value to:", item.quantity);
-        }
-        if (editUnitType) {
-            editUnitType.value = item.unit_type || 'pcs'; // Default 'pcs' jika kosong
-            console.log("Set editUnitType.value to:", item.unit_type);
-        }
-        if (editCostPrice) {
-            editCostPrice.value = item.cost_price || 0; // Menggunakan cost_price
-            console.log("Set editCostPrice.value to:", item.cost_price);
-        }
-        if (editSellingPrice) {
-            editSellingPrice.value = item.selling_price || 0; // Menggunakan selling_price
-            console.log("Set editSellingPrice.value to:", item.selling_price);
-        }
-
-
-        // Tampilkan modal
-        if (editItemModal) {
-            editItemModal.style.display = 'flex'; // Menggunakan flex untuk centering
-        }
-        console.log("Modal display set to flex.");
-        console.log("--- openEditModal Selesai ---");
-
-    } catch (error) {
-        console.error('Error saat membuka modal edit:', error.message);
-        alert('Gagal membuka modal edit: ' + error.message);
-    }
-}
-
-// --- Event Listener Form Tambah Item (Ini sudah benar) ---
-if (saveInventarisBtn) {
-    saveInventarisBtn.addEventListener('click', async (e) => {
-        e.preventDefault();
-        console.log("Tombol Simpan Item ditekan.");
-
-        const itemName = itemNameInput.value.trim();
-        const quantity = parseInt(itemQuantityInput.value);
-        const itemCode = generateUniqueItemCode(); // Hasilkan kode unik
-        const unitType = itemUnitTypeInput.value;
-        const costPrice = parseFloat(itemCostPriceInput.value);
-        const sellingPrice = parseFloat(itemSellingPriceInput.value);
-
-        // Validasi
-        if (!itemName || isNaN(quantity) || isNaN(costPrice) || isNaN(sellingPrice) || quantity < 0 || costPrice < 0 || sellingPrice < 0) {
-            inventarisFormMessage.textContent = 'Semua bidang harus diisi dengan nilai yang valid (jumlah/harga tidak boleh negatif).';
-            inventarisFormMessage.style.color = 'red';
-            return;
-        }
-
-        try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
-                inventarisFormMessage.textContent = 'Anda harus login untuk menambahkan item.';
-                inventarisFormMessage.style.color = 'red';
-                return;
-            }
-
-            const { data, error } = await supabase
-                .from('inventories')
-                .insert([
-                    {
-                        user_id: user.id,
-                        item_name: itemName,
-                        quantity: quantity,
-                        item_code: itemCode, // Sertakan item_code
-                        unit_type: unitType,
-                        cost_price: costPrice,
-                        selling_price: sellingPrice
-                    }
-                ]);
-
-            if (error) {
-                console.error('Error saving inventory item:', error.message);
-                inventarisFormMessage.textContent = 'Gagal menyimpan item inventaris: ' + error.message;
-                inventarisFormMessage.style.color = 'red';
-                return;
-            }
-
-            inventarisFormMessage.textContent = 'Item inventaris berhasil disimpan!';
-            inventarisFormMessage.style.color = 'green';
-
-            // Reset form
-            itemNameInput.value = '';
-            itemQuantityInput.value = '';
-            itemUnitTypeInput.value = 'pcs'; // Reset ke default
-            itemCostPriceInput.value = '';
-            itemSellingPriceInput.value = '';
-
-            await loadInventarisData(); // Muat ulang data setelah simpan
-
-        } catch (error) {
-            console.error('Error saving inventory item:', error.message);
-            inventarisFormMessage.textContent = 'Gagal menyimpan item inventaris: ' + error.message;
-            inventarisFormMessage.style.color = 'red';
-        }
-    });
-}
-
-// --- Event Listener Form Edit Item (INI ADALAH BAGIAN UTAMA YANG DIREVISI) ---
-if (editItemForm) {
-    editItemForm.onsubmit = async (e) => {
-        e.preventDefault();
-        console.log("Edit form submitted!"); // <-- LOGGING BARU
-
-        // Pastikan semua elemen input diambil dengan benar
-        const itemId = editItemId ? editItemId.value : null;
-        const itemName = editItemName ? editItemName.value.trim() : '';
-        const quantity = editQuantity ? parseInt(editQuantity.value) : NaN;
-        const unitType = editUnitType ? editUnitType.value : '';
-        const costPrice = editCostPrice ? parseFloat(editCostPrice.value) : NaN;
-        const sellingPrice = editSellingPrice ? parseFloat(editSellingPrice.value) : NaN; // <-- Pastikan ini yang diambil
-
-        // Perbarui validasi: Pastikan TIDAK ADA referensi ke 'editPrice' di sini.
-        if (!itemId || !itemName || isNaN(quantity) || isNaN(costPrice) || isNaN(sellingPrice) || quantity < 0 || costPrice < 0 || sellingPrice < 0) {
-            console.log("Validation failed in edit form!"); // <-- LOGGING BARU
-            alert('Semua bidang harus diisi dengan nilai yang valid (jumlah/harga tidak boleh negatif).');
-            return;
-        }
-        console.log("Validation passed. Attempting update..."); // <-- LOGGING BARU
-
-        try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
-                console.log("User not logged in for edit!"); // <-- LOGGING BARU
-                alert('Anda harus login untuk memperbarui item.');
-                return;
-            }
-
-            // Payload untuk update
-            // Pastikan TIDAK ADA "price" di sini, hanya "cost_price" dan "selling_price"
-            const updatePayload = {
-                item_name: itemName,
-                quantity: quantity,
-                unit_type: unitType,
-                cost_price: costPrice,
-                selling_price: sellingPrice,
-                last_updated: new Date().toISOString()
-                // item_code TIDAK di-update karena kita set readonly
-            };
-            console.log("Update payload:", updatePayload); // <-- LOGGING BARU
-
-            const { data, error } = await supabase
-                .from('inventories')
-                .update(updatePayload)
-                .eq('id', itemId)
-                .eq('user_id', user.id); // Pastikan user_id juga cocok
-
-            if (error) {
-                console.error('Supabase update error:', error); // <-- LOGGING LEBIH DETAIL
-                throw error;
-            }
-
-            alert('Item inventaris berhasil diperbarui!');
-            if (editItemModal) editItemModal.style.display = 'none'; // Sembunyikan modal
-            await loadInventarisData(); // Muat ulang data setelah update
-        } catch (error) {
-            console.error('Error updating inventory item (catch block):', error.message);
-            alert('Gagal memperbarui item inventaris: ' + error.message);
-        }
-    };
-}
-
-
-// --- Event Listener Lainnya ---
-if (closeEditModalBtn) {
-    closeEditModalBtn.addEventListener('click', () => {
-        if (editItemModal) editItemModal.style.display = 'none';
-        console.log("Modal ditutup via tombol X.");
-    });
-}
-
-if (cancelEditBtn) {
-    cancelEditBtn.addEventListener('click', () => {
-        if (editItemModal) editItemModal.style.display = 'none';
-        console.log("Modal ditutup via tombol Batal.");
-    });
-}
-
-// ... (lanjutkan dengan event listener untuk delete, login, logout, dll. yang sudah Anda miliki)
-// Pastikan tombol delete memanggil deleteInventoryItem
-async function deleteInventoryItem(itemId) {
-    if (!confirm('Apakah Anda yakin ingin menghapus item ini?')) {
-        return;
-    }
-
-    try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-            alert('Anda harus login untuk menghapus item.');
-            return;
-        }
-
-        const { error } = await supabase
-            .from('inventories')
-            .delete()
-            .eq('id', itemId)
-            .eq('user_id', user.id);
-
-        if (error) {
-            console.error('Error menghapus item inventaris:', error.message);
-            alert('Gagal menghapus item inventaris: ' + error.message);
-            return;
-        }
-
-        alert('Item berhasil dihapus.');
-        await loadInventarisData();
-    } catch (error) {
-        console.error('Error tak terduga saat menghapus item:', error.message);
-        alert('Gagal menghapus item inventaris: ' + error.message);
-    }
-}
-
-
-// *** CATATAN PENTING ***
-// Pastikan Anda sudah menghapus kolom 'price' di Supabase.
-// Pastikan file index.html Anda sudah diperbarui dengan semua input baru dan tampilan tabel yang benar.
-// Kedua poin di atas sudah dikonfirmasi "beres" dari log dan gambar terakhir Anda, jadi fokus pada script.js ini.
 // Periksa Peran User dan Redirect
 async function checkUserRoleAndRedirect(user) {
     if (!user) {
