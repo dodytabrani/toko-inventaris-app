@@ -611,35 +611,53 @@ saveInventarisBtn.addEventListener('click', async () => {
 
    // ... kode lainnya sebelum baris 626 (asumsi) ...
 
+// ... KODE ANDA SEBELUMNYA ...
+// Misalnya, di dalam fungsi atau event listener seperti ini:
+// document.getElementById('addInventarisForm').addEventListener('submit', async (e) => {
+//     e.preventDefault();
+//     const itemName = document.getElementById('itemName').value;
+//     const itemQuantity = document.getElementById('itemQuantity').value;
+//     const itemPrice = document.getElementById('itemPrice').value;
+//     const inventarisFormMessage = document.getElementById('inventarisFormMessage');
+//     const addInventarisForm = document.getElementById('addInventarisForm');
+//     const addInventarisBtn = document.getElementById('addInventarisBtn');
+
+// Pastikan variabel itemName, itemQuantity, dan itemPrice sudah terdefinisi
+// dan berisi nilai yang benar dari input form.
+
 const { data, error } = await supabase
     .from('inventories')
     .insert([
         {
+            // user_id: user.id, // <-- BARIS INI DIHAPUS UNTUK MENGGUNAKAN DEFAULT VALUE auth.uid()
             item_name: itemName,
             quantity: itemQuantity,
-            price: itemPrice // <--- Pastikan TIDAK ADA KOMA di sini jika ini item terakhir
-        } // <--- Pastikan kurung kurawal ini ada dan benar
-    ]); // <--- Pastikan kurung siku dan kurung tutup ini ada dan benar
+            price: itemPrice
+        }
+    ]);
 
-if (error) { // <--- Baris 633 kemungkinan di sini atau di baris sebelumnya
+if (error) {
     console.error("Error saving inventory item:", error.message);
     // Tampilkan pesan error ke pengguna di UI jika perlu
+    inventarisFormMessage.textContent = 'Error: Gagal menyimpan item inventaris. Coba lagi.';
+    inventarisFormMessage.className = 'message error';
 } else {
     console.log("Inventory item saved successfully:", data);
     // Lakukan sesuatu setelah item tersimpan, misalnya refresh daftar inventaris
+
+    inventarisFormMessage.textContent = 'Item berhasil disimpan!';
+    inventarisFormMessage.className = 'message success';
+    itemNameInput.value = ''; // Kosongkan input
+    itemQuantityInput.value = ''; // Kosongkan input
+    itemPriceInput.value = ''; // Kosongkan input
+
+    // Sembunyikan form dan tampilkan kembali tombol "Tambah Item" setelah berhasil
+    addInventarisForm.style.display = 'none';
+    addInventarisBtn.style.display = 'inline-block';
+
+    await loadInventarisData(); // Muat ulang data inventaris untuk menampilkan yang baru
 }
 
-    } else {
-        inventarisFormMessage.textContent = 'Item berhasil disimpan!';
-        inventarisFormMessage.className = 'message success';
-        itemNameInput.value = '';
-        itemQuantityInput.value = '';
-        itemPriceInput.value = '';
-
-        // Sembunyikan form dan tampilkan kembali tombol "Tambah Item" setelah berhasil
-        addInventarisForm.style.display = 'none';
-        addInventarisBtn.style.display = 'inline-block';
-
-        await loadInventarisData(); // Muat ulang data inventaris untuk menampilkan yang baru
-    }
-});
+// ... KODE ANDA SETELAHNYA ...
+// Misalnya, penutup event listener:
+// });
