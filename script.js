@@ -646,3 +646,28 @@ saveInventarisBtn.addEventListener('click', async () => {
         await loadInventarisData(); // Muat ulang data inventaris untuk menampilkan yang baru
     }
 }); // <-- PASTIKAN INI ADA DAN TIDAK DIKOMENTARI
+// --- Modal Edit Item ---
+const editItemModal = document.getElementById('editItemModal');
+const closeEditModalBtn = document.querySelector('#editItemModal .close-button');
+const cancelEditBtn = document.getElementById('cancelEditBtn');
+const editItemForm = document.getElementById('editItemForm');
+const editItemId = document.getElementById('editItemId');
+const editItemName = document.getElementById('editItemName');
+const editQuantity = document.getElementById('editQuantity');
+const editPrice = document.getElementById('editPrice');
+
+function openEditModal(item) {
+    // ... (seluruh isi fungsi) ...
+}
+
+if (closeEditModalBtn) {
+    // ... (seluruh isi event listener) ...
+}
+if (cancelEditBtn) {
+    // ... (seluruh isi event listener) ...
+}
+
+if (editItemForm) {
+    // ... (seluruh isi event listener onsubmit) ...
+}
+// --- Akhir dari Modal Edit Item ---
