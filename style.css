@@ -411,4 +411,37 @@ table td button {
     .modal-content form input, .modal-content form select {
         width: calc(100% - 20px); /* Adjust for new padding */
     }
+/* ... kode CSS lainnya ... */
+
+table th, table td {
+    border: none;
+    padding: 14px 18px;
+    text-align: left;
+    vertical-align: middle;
+    font-size: 0.9em;
+    white-space: nowrap; /* <<<--- TAMBAHKAN INI */
+}
+
+table th {
+    background-color: #ecf0f1;
+    color: #555;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #ddd;
+    white-space: nowrap; /* <<<--- TAMBAHKAN INI */
+}
+
+/* ... sisa kode CSS Anda ... */
+
+/* Di bagian paling bawah media query @media (max-width: 768px) */
+@media (max-width: 768px) {
+    /* ... kode lainnya ... */
+
+    table td::before {
+        /* ... kode lainnya ... */
+        white-space: nowrap; /* Pastikan ini juga ada di sini untuk konsistensi */
+    }
+    /* ... sisa media query ... */
+}
 }
