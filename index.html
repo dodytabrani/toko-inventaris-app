@@ -65,6 +65,27 @@
             <input type="password" id="adminPassword" placeholder="Password Admin">
             <button id="adminLoginBtn">Login Admin</button> <p id="adminLoginMessage" class="message"></p> </section>
 
+            <div id="editItemModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h2>Edit Item Inventaris</h2>
+        <form id="editItemForm">
+            <input type="hidden" id="editItemId">
+
+            <label for="editItemName">Nama Item:</label>
+            <input type="text" id="editItemName" required>
+
+            <label for="editQuantity">Jumlah:</label>
+            <input type="number" id="editQuantity" required min="0">
+
+            <label for="editPrice">Harga Satuan:</label>
+            <input type="number" id="editPrice" step="0.01" required min="0">
+
+            <button type="submit" id="saveEditBtn">Simpan Perubahan</button>
+            <button type="button" id="cancelEditBtn">Batal</button>
+        </form>
+    </div>
+</div>
         <section id="admin-panel-section" class="card" style="display: none;">
             <h2>Panel Admin Lisensi</h2>
             <button id="refreshLicensesBtn">Refresh Data Lisensi</button>

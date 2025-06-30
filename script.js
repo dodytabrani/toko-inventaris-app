@@ -346,6 +346,7 @@ async function loadInventarisData() {
                     // Baris di bawah ini adalah yang diganti
                     const itemToEdit = data.find(item => item.id === itemId);
                     if (itemToEdit) {
+	                    console.log('Item ditemukan:', itemToEdit); // TAMBAH INI
                         openEditModal(itemToEdit);
                     } else {
                         console.error('Item with ID not found:', itemId);
