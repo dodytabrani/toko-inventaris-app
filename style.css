@@ -175,6 +175,7 @@ button:hover {
     min-height: auto; /* Allow height to be determined by content */
     display: block; /* Important for table rendering */
     color: #333;
+    overflow-x: auto; /* Enable horizontal scroll for table on smaller screens */
 }
 
 table {
@@ -194,6 +195,7 @@ table th, table td {
     text-align: left;
     vertical-align: middle; /* Align text vertically in middle */
     font-size: 0.9em;
+    white-space: nowrap; /* <<<--- INI PENTING! Mencegah wrapping teks */
 }
 
 table th {
@@ -203,6 +205,7 @@ table th {
     text-transform: uppercase; /* Uppercase headers */
     letter-spacing: 0.5px;
     border-bottom: 1px solid #ddd; /* Subtle line below headers */
+    white-space: nowrap; /* <<<--- INI PENTING! */
 }
 
 table td {
@@ -329,7 +332,7 @@ table td button {
     font-size: 1.05em;
 }
 
-/* Responsive Adjustments */
+/* Responsive Adjustments (FOR MOBILE/SMALL SCREENS) */
 @media (max-width: 768px) {
     header {
         flex-direction: column;
@@ -350,18 +353,13 @@ table td button {
         padding: 20px;
     }
 
-    table, .form-container {
-        overflow-x: auto; /* Allow horizontal scrolling for tables and forms */
+    /* Make table stack vertically on small screens */
+    table thead {
+        display: none; /* Hide original header */
     }
 
-    table thead, table tbody, table th, table td, table tr {
-        display: block; /* Stack table elements for smaller screens */
-    }
-
-    table thead tr {
-        position: absolute;
-        top: -9999px;
-        left: -9999px;
+    table tbody, table tr {
+        display: block; /* Stack tbody and tr */
     }
 
     table tr {
@@ -369,26 +367,34 @@ table td button {
         margin-bottom: 15px;
         border-radius: 8px;
         overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05); /* Add subtle shadow to cards */
     }
 
     table td {
-        border: none;
+        border: none; /* Remove cell borders */
         position: relative;
-        padding-left: 50%;
+        padding-left: 50%; /* Space for pseudo-element label */
         text-align: right;
-        display: flex;
+        display: flex; /* Use flex to align label and value */
         justify-content: space-between;
         align-items: center;
         font-size: 1em;
+        padding-top: 12px; /* Adjust padding */
+        padding-bottom: 12px; /* Adjust padding */
+        white-space: normal; /* Allow text to wrap on mobile */
+    }
+
+    table td:not(:last-child) {
+        border-bottom: 1px solid #eee; /* Add separator between stacked cells */
     }
 
     table td::before {
         content: attr(data-label); /* Use data-label for pseudo-elements */
         position: absolute;
-        left: 10px;
+        left: 15px; /* Label position */
         width: 45%;
         padding-right: 10px;
-        white-space: nowrap;
+        white-space: nowrap; /* Keep label on one line */
         text-align: left;
         font-weight: 600;
         color: #555;
@@ -411,37 +417,15 @@ table td button {
     .modal-content form input, .modal-content form select {
         width: calc(100% - 20px); /* Adjust for new padding */
     }
-/* ... kode CSS lainnya ... */
-
-table th, table td {
-    border: none;
-    padding: 14px 18px;
-    text-align: left;
-    vertical-align: middle;
-    font-size: 0.9em;
-    white-space: nowrap; /* <<<--- TAMBAHKAN INI */
 }
 
-table th {
-    background-color: #ecf0f1;
-    color: #555;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border-bottom: 1px solid #ddd;
-    white-space: nowrap; /* <<<--- TAMBAHKAN INI */
+/* Styling for license status messages */
+.status-active {
+    color: #28a745; /* Green */
+    font-weight: bold;
 }
 
-/* ... sisa kode CSS Anda ... */
-
-/* Di bagian paling bawah media query @media (max-width: 768px) */
-@media (max-width: 768px) {
-    /* ... kode lainnya ... */
-
-    table td::before {
-        /* ... kode lainnya ... */
-        white-space: nowrap; /* Pastikan ini juga ada di sini untuk konsistensi */
-    }
-    /* ... sisa media query ... */
-}
+.status-expired {
+    color: #dc3545; /* Red */
+    font-weight: bold;
 }

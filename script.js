@@ -356,14 +356,14 @@ async function loadInventarisData() {
 
     html += `
         <tr>
-            <td>${item.item_code || 'N/A'}</td>
-            <td>${item.item_name}</td>
-            <td>${item.quantity}</td>
-            <td>${item.unit_type || 'pcs'}</td>
-            <td>${formattedCostPrice}</td>
-            <td>${formattedSellingPrice}</td>
-            <td class="${profitPerItem < 0 ? 'text-red' : (profitPerItem > 0 ? 'text-green' : '')}">${formattedProfit}</td>
-            <td>
+            <td data-label="Kode Item">${item.item_code || 'N/A'}</td>
+            <td data-label="Nama Item">${item.item_name}</td>
+            <td data-label="Jumlah">${item.quantity}</td>
+            <td data-label="Satuan">${item.unit_type || 'pcs'}</td>
+            <td data-label="Harga Modal">${formattedCostPrice}</td>
+            <td data-label="Harga Jual">${formattedSellingPrice}</td>
+            <td data-label="Keuntungan/Item" class="${profitPerItem < 0 ? 'text-red' : (profitPerItem > 0 ? 'text-green' : '')}">${formattedProfit}</td>
+            <td data-label="Aksi">
                 <button class="edit-item-btn" data-id="${item.id}">Edit</button>
                 <button class="delete-item-btn" data-id="${item.id}">Hapus</button>
             </td>
