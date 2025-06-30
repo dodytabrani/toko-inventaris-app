@@ -518,12 +518,13 @@ if (editItemForm) {
         const itemId = editItemId ? editItemId.value : null;
         const itemName = editItemName ? editItemName.value.trim() : '';
         const quantity = editQuantity ? parseInt(editQuantity.value) : NaN;
-		const unitType = editUnitType ? editUnitType.value : ''; // <-- BARU
-		const costPrice = editCostPrice ? parseFloat(editCostPrice.value) : NaN; // <-- BARU
-        const sellingPrice = editSellingPrice ? parseFloat(editSellingPrice.value) : NaN; // <-- BARU
-        const price = editPrice ? parseFloat(editPrice.value) : NaN;
+        const unitType = editUnitType ? editUnitType.value : ''; // <-- Ini sudah benar
+        const costPrice = editCostPrice ? parseFloat(editCostPrice.value) : NaN; // <-- Ini sudah benar
+        const sellingPrice = editSellingPrice ? parseFloat(editSellingPrice.value) : NaN; // <-- Ini sudah benar
+        // const price = editPrice ? parseFloat(editPrice.value) : NaN; // <-- HAPUS BARIS INI!
 
-        if (!itemId || !itemName || isNaN(quantity) || isNaN(price) || quantity < 0 || price < 0) {
+        // Perbarui validasi untuk menggunakan costPrice dan sellingPrice
+        if (!itemId || !itemName || isNaN(quantity) || isNaN(costPrice) || isNaN(sellingPrice) || quantity < 0 || costPrice < 0 || sellingPrice < 0) {
             alert('Semua bidang harus diisi dengan nilai yang valid (jumlah/harga tidak boleh negatif).');
             return;
         }
@@ -535,12 +536,15 @@ if (editItemForm) {
                 return;
             }
 
+            // Perbarui payload update untuk menggunakan cost_price dan selling_price
             const { data, error } = await supabase
                 .from('inventories')
                 .update({
                     item_name: itemName,
                     quantity: quantity,
-                    price: price,
+                    unit_type: unitType, // <-- Tambahkan ini
+                    cost_price: costPrice, // <-- Ganti dari 'price'
+                    selling_price: sellingPrice, // <-- Tambahkan ini
                     last_updated: new Date().toISOString()
                 })
                 .eq('id', itemId)
@@ -557,7 +561,6 @@ if (editItemForm) {
         }
     };
 }
-
 
 // --- 4. EVENT LISTENERS UTAMA (NON-MODAL) ---
 
