@@ -74,22 +74,6 @@
 
             <div id="inventaris-data">
         <p>Memuat data inventaris...</p>
-		    <div id="inventaris-data">
-            <p id="loading-message">Memuat data inventaris...</p>
-
-    <div class="filter-controls">
-        <input type="text" id="searchItemInput" placeholder="Cari Kode atau Nama Item...">
-        <select id="filterUnitType">
-            <option value="">Semua Satuan</option>
-            <option value="pcs">Pcs</option>
-            <option value="pack">Pack</option>
-            <option value="bungkus">Bungkus</option>
-            <option value="unit">Unit</option>
-            <option value="kg">Kg</option>
-            <option value="liter">Liter</option>
-        </select>
-    </div>
-    <table>
             <table>
                <thead>
                 <tr>
@@ -106,14 +90,6 @@
         <tbody id="inventarisTableBody">
         </tbody>
     </table>
-	</table>
-        <div class="pagination-controls">
-            <button id="prevPageBtn" disabled>&lt; Sebelumnya</button>
-            <div id="pageNumbers"></div>
-            <button id="nextPageBtn">&gt; Berikutnya</button>
-        </div>
-        </div>
-    </section>
 </div>
         <!-- <button id="logoutBtn">Logout</button> --> 
         </section>
@@ -187,7 +163,7 @@
             </div>
         </div>
     </main>
-   <script src="supabase.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="app.js"></script>
 </body>
 </html>
