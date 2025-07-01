@@ -24,6 +24,10 @@ let currentPage = 1;
 const ITEMS_PER_PAGE = 5;
 let totalPages = 1;
 
+// js/inventory.js
+
+// ... (import statements dan variabel lainnya di atas) ...
+
 export async function checkLicenseStatusAndToggleAddButton() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
@@ -39,30 +43,31 @@ export async function checkLicenseStatusAndToggleAddButton() {
         .eq('user_id', user.id)
         .single();
 
-    if (error && error.code !== 'PGRST116') {
+    if (error && error.code !== 'PGRST116') { // PGRST116 adalah kode untuk "Row not found"
         console.error("Error checking license:", error.message);
         if (licenseStatusP) licenseStatusP.textContent = 'Gagal memeriksa lisensi. Harap coba lagi.';
         if (licenseStatusP) licenseStatusP.className = 'message error';
         if (addInventarisBtn) addInventarisBtn.style.display = 'none';
         return false;
-    } else if (!data) {
+    } else if (!data) { // Jika tidak ada data lisensi ditemukan untuk user ini
         if (licenseStatusP) licenseStatusP.textContent = 'Lisensi Anda belum aktif. Hubungi admin untuk aktivasi.';
         if (licenseStatusP) licenseStatusP.className = 'message error';
         if (addInventarisBtn) addInventarisBtn.style.display = 'none';
         return false;
-    } else if (!data.is_active || new Date(data.expiry_date) < new Date()) {
+    } else if (!data.is_active || new Date(data.expiry_date) < new Date()) { // Jika lisensi tidak aktif atau sudah kadaluarsa
         if (licenseStatusP) licenseStatusP.textContent = `Lisensi Anda tidak aktif atau sudah kadaluarsa pada ${new Date(data.expiry_date).toLocaleDateString()}.`;
         if (licenseStatusP) licenseStatusP.className = 'message error';
         if (addInventarisBtn) addInventarisBtn.style.display = 'none';
         return false;
-    else {
-    // PERHATIKAN PERUBAHAN 'license' menjadi 'data' di bawah ini
-    if (licenseStatusP) licenseStatusP.textContent = `Lisensi Anda aktif hingga ${new Date(data.expiry_date).toLocaleDateString()}.`;
-    if (licenseStatusP) licenseStatusP.className = 'message success';
-    if (addInventarisBtn) addInventarisBtn.style.display = 'inline-block';
-    return true;
+    } else { // Jika lisensi aktif dan belum kadaluarsa
+        if (licenseStatusP) licenseStatusP.textContent = `Lisensi Anda aktif hingga ${new Date(data.expiry_date).toLocaleDateString()}.`;
+        if (licenseStatusP) licenseStatusP.className = 'message success';
+        if (addInventarisBtn) addInventarisBtn.style.display = 'inline-block';
+        return true;
+    }
 }
-}
+
+// ... (sisa kode inventory.js di bawah) ...
 
 export async function loadInventarisData(searchTerm = '', filterUnitType = '') {
     if (!inventarisDataDiv) {
