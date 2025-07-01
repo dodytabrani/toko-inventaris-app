@@ -3,10 +3,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 // GANTI DENGAN KREDENSIAL PROYEK SUPABASE ANDA YANG BARU!
 const SUPABASE_URL = 'https://sjxhosrvcmejqprooofk.supabase.co'; // Contoh: 'https://abcdefghijk.supabase.co'
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNqeGhvc3J2Y21lanFwcm9vb2ZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEyMzIxMzEsImV4cCI6MjA2NjgwODEzMX0.n3RmP7ouaZSPBuymRi6axXWZQc_DJKi2gX0VEeV3o4U'; // Contoh: 'eyJhbGciOiJIUzI1NiI...'
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Variabel Global untuk menyimpan data inventaris
-let inventarisDataCache = []; // <--- TAMBAHKAN/PASTIKAN BARIS INI ADA DI SINI
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // --- 2. REFERENSI ELEMEN HTML ---
 // Pastikan ID ini cocok persis dengan yang ada di index.html
@@ -304,74 +302,74 @@ async function deleteLicense(licenseId) {
 
 // Muat Data Inventaris
 async function loadInventarisData() {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-        inventarisDataDiv.innerHTML = '<p>Anda harus login untuk melihat inventaris.</p>';
-        addInventarisBtn.style.display = 'none';
-        return;
-    }
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+        inventarisDataDiv.innerHTML = '<p>Anda harus login untuk melihat inventaris.</p>';
+        addInventarisBtn.style.display = 'none';
+        return;
+    }
 
-    // Cek lagi status lisensi, kalau belum aktif, jangan muat data
-    const { data: license } = await supabase
-        .from('licenses')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
+    // Cek lagi status lisensi, kalau belum aktif, jangan muat data
+    const { data: license } = await supabase
+        .from('licenses')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
 
-    if (!license || !license.is_active || new Date(license.expiry_date) < new Date()) {
-        inventarisDataDiv.innerHTML = '<p>Akses inventaris ditolak: Lisensi tidak aktif atau sudah kadaluarsa.</p>';
-        addInventarisBtn.style.display = 'none'; // Sembunyikan tombol tambah jika lisensi tidak aktif
-        return;
-    } else {
-        addInventarisBtn.style.display = 'inline-block'; // Tampilkan tombol tambah jika lisensi aktif
-    }
+    if (!license || !license.is_active || new Date(license.expiry_date) < new Date()) {
+        inventarisDataDiv.innerHTML = '<p>Akses inventaris ditolak: Lisensi tidak aktif atau sudah kadaluarsa.</p>';
+        addInventarisBtn.style.display = 'none'; // Sembunyikan tombol tambah jika lisensi tidak aktif
+        return;
+    } else {
+        addInventarisBtn.style.display = 'inline-block'; // Tampilkan tombol tambah jika lisensi aktif
+    }
 
-    const { data: inventarisDataCache, error } = await supabase // <--- PERUBAHAN DI SINI: 'data' diubah jadi 'inventarisDataCache'
-        .from('inventories')
-        .select('*')
-        .eq('user_id', user.id) // Penting: Hanya ambil data user yang login
-        .order('created_at', { ascending: false }); // Urutkan berdasarkan tanggal terbaru
+    const { data, error } = await supabase
+        .from('inventories')
+        .select('*')
+        .eq('user_id', user.id) // Penting: Hanya ambil data user yang login
+        .order('created_at', { ascending: false }); // Urutkan berdasarkan tanggal terbaru
 
-    if (error) {
-        console.error("Error loading inventaris:", error.message);
-        inventarisDataDiv.innerHTML = '<p class="message error">Gagal memuat data inventaris. Pastikan RLS diatur dengan benar.</p>';
-    } else {
-        if (inventarisDataCache.length === 0) { // <--- PERUBAHAN DI SINI: 'data' diubah jadi 'inventarisDataCache'
-            inventarisDataDiv.innerHTML = '<p>Anda belum memiliki item inventaris. Klik "Tambah Item" untuk memulai.</p>';
-        } else {
-            let html = `
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Nama Item</th>
-                            <th>Jumlah</th>
-                            <th>Harga Satuan</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-            inventarisDataCache.forEach(item => { // <--- PERUBAHAN DI SINI: 'data' diubah jadi 'inventarisDataCache'
-    const profitPerItem = (item.selling_price || 0) - (item.cost_price || 0);
-    const formattedCostPrice = item.cost_price ? `Rp ${item.cost_price.toLocaleString('id-ID')}` : 'Rp 0';
-    const formattedSellingPrice = item.selling_price ? `Rp ${item.selling_price.toLocaleString('id-ID')}` : 'Rp 0';
-    const formattedProfit = `Rp ${profitPerItem.toLocaleString('id-ID')}`;
+    if (error) {
+        console.error("Error loading inventaris:", error.message);
+        inventarisDataDiv.innerHTML = '<p class="message error">Gagal memuat data inventaris. Pastikan RLS diatur dengan benar.</p>';
+    } else {
+        if (data.length === 0) {
+            inventarisDataDiv.innerHTML = '<p>Anda belum memiliki item inventaris. Klik "Tambah Item" untuk memulai.</p>';
+        } else {
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nama Item</th>
+                            <th>Jumlah</th>
+                            <th>Harga Satuan</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            data.forEach(item => {
+    const profitPerItem = (item.selling_price || 0) - (item.cost_price || 0);
+    const formattedCostPrice = item.cost_price ? `Rp ${item.cost_price.toLocaleString('id-ID')}` : 'Rp 0';
+    const formattedSellingPrice = item.selling_price ? `Rp ${item.selling_price.toLocaleString('id-ID')}` : 'Rp 0';
+    const formattedProfit = `Rp ${profitPerItem.toLocaleString('id-ID')}`;
 
-    html += `
-        <tr>
-            <td data-label="Kode Item">${item.item_code || 'N/A'}</td>
-            <td data-label="Nama Item">${item.item_name}</td>
-            <td data-label="Jumlah">${item.quantity}</td>
-            <td data-label="Satuan">${item.unit_type || 'pcs'}</td>
-            <td data-label="Harga Modal">${formattedCostPrice}</td>
-            <td data-label="Harga Jual">${formattedSellingPrice}</td>
-            <td data-label="Keuntungan/Item" class="${profitPerItem < 0 ? 'text-red' : (profitPerItem > 0 ? 'text-green' : '')}">${formattedProfit}</td>
-            <td data-label="Aksi">
-                <button class="edit-item-btn" data-id="${item.id}">Edit</button>
-                <button class="delete-item-btn" data-id="${item.id}">Hapus</button>
-            </td>
-        </tr>
-    `;
+    html += `
+        <tr>
+            <td data-label="Kode Item">${item.item_code || 'N/A'}</td>
+            <td data-label="Nama Item">${item.item_name}</td>
+            <td data-label="Jumlah">${item.quantity}</td>
+            <td data-label="Satuan">${item.unit_type || 'pcs'}</td>
+            <td data-label="Harga Modal">${formattedCostPrice}</td>
+            <td data-label="Harga Jual">${formattedSellingPrice}</td>
+            <td data-label="Keuntungan/Item" class="${profitPerItem < 0 ? 'text-red' : (profitPerItem > 0 ? 'text-green' : '')}">${formattedProfit}</td>
+            <td data-label="Aksi">
+                <button class="edit-item-btn" data-id="${item.id}">Edit</button>
+                <button class="delete-item-btn" data-id="${item.id}">Hapus</button>
+            </td>
+        </tr>
+    `;
 });
 html += `
             </tbody>
@@ -383,7 +381,7 @@ inventarisDataDiv.innerHTML = html;
             document.querySelectorAll('.edit-item-btn').forEach(button => {
                 button.addEventListener('click', (e) => {
                     const itemId = e.target.dataset.id;
-                    const itemToEdit = inventarisDataCache.find(item => item.id === Number(itemId));
+                    const itemToEdit = data.find(item => item.id === itemId);
                     if (itemToEdit) {
                         console.log('Item ditemukan:', itemToEdit);
                         openEditModal(itemToEdit);
