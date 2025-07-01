@@ -1059,4 +1059,3 @@ if (unitTypeFilter) {
 //     loadInventarisData(); // Panggil pertama kali saat halaman dimuat
 //     // ... logika inisialisasi lainnya
 // }
-// });
