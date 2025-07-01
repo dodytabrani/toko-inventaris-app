@@ -331,70 +331,66 @@ async function loadInventarisData() {
         .order('created_at', { ascending: false }); // Urutkan berdasarkan tanggal terbaru
 
     if (error) {
-    console.error("Error loading inventaris:", error.message);
-    inventarisDataDiv.innerHTML = '<p class="message error">Gagal memuat data inventaris. Pastikan RLS diatur dengan benar.</p>';
-} else {
-    // --- PERUBAHAN BARU DIMULAI DI SINI ---
-    // Pastikan 'data' adalah array yang valid sebelum digunakan.
-    // Jika 'data' dari Supabase bukan array, kita akan menganggapnya sebagai array kosong.
-    const loadedInventaris = Array.isArray(data) ? data : [];
-
-    if (loadedInventaris.length === 0) { // <--- UBAH 'data' menjadi 'loadedInventaris'
-        inventarisDataDiv.innerHTML = '<p>Anda belum memiliki item inventaris. Klik "Tambah Item" untuk memulai.</p>';
+        console.error("Error loading inventaris:", error.message);
+        inventarisDataDiv.innerHTML = '<p class="message error">Gagal memuat data inventaris. Pastikan RLS diatur dengan benar.</p>';
     } else {
-        let html = `
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nama Item</th>
-                        <th>Jumlah</th>
-                        <th>Harga Satuan</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
-        loadedInventaris.forEach(item => { // <--- UBAH 'data' menjadi 'loadedInventaris'
-            const profitPerItem = (item.selling_price || 0) - (item.cost_price || 0);
-            const formattedCostPrice = item.cost_price ? `Rp ${item.cost_price.toLocaleString('id-ID')}` : 'Rp 0';
-            const formattedSellingPrice = item.selling_price ? `Rp ${item.selling_price.toLocaleString('id-ID')}` : 'Rp 0';
-            const formattedProfit = `Rp ${profitPerItem.toLocaleString('id-ID')}`;
-
-            html += `
-                <tr>
-                    <td data-label="Kode Item">${item.item_code || 'N/A'}</td>
-                    <td data-label="Nama Item">${item.item_name}</td>
-                    <td data-label="Jumlah">${item.quantity}</td>
-                    <td data-label="Satuan">${item.unit_type || 'pcs'}</td>
-                    <td data-label="Harga Modal">${formattedCostPrice}</td>
-                    <td data-label="Harga Jual">${formattedSellingPrice}</td>
-                    <td data-label="Keuntungan/Item" class="${profitPerItem < 0 ? 'text-red' : (profitPerItem > 0 ? 'text-green' : '')}">${formattedProfit}</td>
-                    <td data-label="Aksi">
-                        <button class="edit-item-btn" data-id="${item.id}">Edit</button>
-                        <button class="delete-item-btn" data-id="${item.id}">Hapus</button>
-                    </td>
-                </tr>
+        if (data.length === 0) {
+            inventarisDataDiv.innerHTML = '<p>Anda belum memiliki item inventaris. Klik "Tambah Item" untuk memulai.</p>';
+        } else {
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nama Item</th>
+                            <th>Jumlah</th>
+                            <th>Harga Satuan</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
             `;
-        });
+            data.forEach(item => {
+    const profitPerItem = (item.selling_price || 0) - (item.cost_price || 0);
+    const formattedCostPrice = item.cost_price ? `Rp ${item.cost_price.toLocaleString('id-ID')}` : 'Rp 0';
+    const formattedSellingPrice = item.selling_price ? `Rp ${item.selling_price.toLocaleString('id-ID')}` : 'Rp 0';
+    const formattedProfit = `Rp ${profitPerItem.toLocaleString('id-ID')}`;
 
-        // Bagian event listener tombol edit:
-        document.querySelectorAll('.edit-item-btn').forEach(button => {
-            button.addEventListener('click', (e) => {
-                const itemId = e.target.dataset.id;
-                // <--- UBAH 'data' menjadi 'loadedInventaris' di sini juga!
-                const itemToEdit = loadedInventaris.find(item => item.id === Number(itemId));
-                if (itemToEdit) {
-                    // console.log('Item ditemukan:', itemToEdit); // Jika ada baris ini, biarkan
-                    openEditModal(itemToEdit);
-                } else {
-                    console.error('Item with ID not found:', itemId);
-                    alert('Gagal menemukan item untuk diedit.');
-                }
+    html += `
+        <tr>
+            <td data-label="Kode Item">${item.item_code || 'N/A'}</td>
+            <td data-label="Nama Item">${item.item_name}</td>
+            <td data-label="Jumlah">${item.quantity}</td>
+            <td data-label="Satuan">${item.unit_type || 'pcs'}</td>
+            <td data-label="Harga Modal">${formattedCostPrice}</td>
+            <td data-label="Harga Jual">${formattedSellingPrice}</td>
+            <td data-label="Keuntungan/Item" class="${profitPerItem < 0 ? 'text-red' : (profitPerItem > 0 ? 'text-green' : '')}">${formattedProfit}</td>
+            <td data-label="Aksi">
+                <button class="edit-item-btn" data-id="${item.id}">Edit</button>
+                <button class="delete-item-btn" data-id="${item.id}">Hapus</button>
+            </td>
+        </tr>
+    `;
+});
+html += `
+            </tbody>
+        </table>
+    `;
+inventarisDataDiv.innerHTML = html;
+
+            // Tambahkan event listener untuk tombol edit/hapus setelah elemen dibuat
+            document.querySelectorAll('.edit-item-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const itemId = e.target.dataset.id;
+                    const itemToEdit = data.find(item => item.id === itemId);
+                    if (itemToEdit) {
+                        console.log('Item ditemukan:', itemToEdit);
+                        openEditModal(itemToEdit);
+                    } else {
+                        console.error('Item with ID not found:', itemId);
+                        alert('Gagal menemukan item untuk diedit.'); // Alert ini hanya untuk kasus error, bukan pop-up biasa.
+                    }
+                });
             });
-        });
-    }
-}
-// --- PERUBAHAN BARU BERAKHIR DI SINI ---
 
             document.querySelectorAll('.delete-item-btn').forEach(button => {
                 button.addEventListener('click', async (e) => {
