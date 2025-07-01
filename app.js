@@ -509,7 +509,7 @@ function openEditModal(item) {
     const itemSellingPrice = item ? item.selling_price : 0; // <-- BARU
 
     // HAPUS BARIS INI KARENA TIDAK DIGUNAKAN LAGI JIKA SUDAH ADA selling_price
-    // const itemPrice = item ? item.price : 0; 
+    // const itemPrice = item ? item.price : 0;
 
     // Debugging keberadaan elemen DOM
     console.log('Cek Elemen DOM:');
@@ -520,10 +520,10 @@ function openEditModal(item) {
     console.log('editUnitType:', editUnitType); // <-- BARU
     console.log('editCostPrice:', editCostPrice); // <-- BARU
     console.log('editSellingPrice:', editSellingPrice); // <-- BARU
-    
+
     // HAPUS BARIS INI KARENA VARIABEL 'editPrice' SUDAH TIDAK ADA
-    // console.log('editPrice:', editPrice); 
-    
+    // console.log('editPrice:', editPrice);
+
     console.log('editItemModal:', editItemModal);
 
     // Mengisi nilai input
@@ -561,14 +561,14 @@ function openEditModal(item) {
     } else {
         console.error('ERROR: Elemen editUnitType tidak ditemukan!');
     }
-    
+
     if (editCostPrice) { // <-- BARU
         editCostPrice.value = itemCostPrice;
         console.log(`Set editCostPrice.value to: ${editCostPrice.value}`);
     } else {
         console.error('ERROR: Elemen editCostPrice tidak ditemukan!');
     }
-    
+
     if (editSellingPrice) { // <-- BARU
         editSellingPrice.value = itemSellingPrice;
         console.log(`Set editSellingPrice.value to: ${editSellingPrice.value}`);
@@ -619,7 +619,7 @@ if (editItemForm) {
         }
 
         try {
-            const { data: { user } } = await supabase.auth.getUser(); 
+            const { data: { user } } = await supabase.auth.getUser();
             if (!user) {
                 alert('Anda harus login untuk memperbarui item.');
                 return;
@@ -774,7 +774,7 @@ if (logoutBtn) { // <--- Ini awal if statement
             mainLogoutBtn.style.display = 'none';
         }
     }); // Ini akhir dari addEventListener
-} // <--- INI KURUNG KURAWAL PENUTUP YANG HILANG DAN PERLU DITAMBAHKAN
+} // <--- INI KURUNG KURAWAL PENUTUP YANG DITAMBAHKAN
 
 // Admin Login
 adminLoginBtn.addEventListener('click', async () => {
@@ -842,14 +842,14 @@ refreshLicensesBtn.addEventListener('click', loadLicensesData);
 addInventarisBtn.addEventListener('click', () => {
     addInventarisForm.style.display = 'block'; // Tampilkan form
     addInventarisBtn.style.display = 'none'; // Sembunyikan tombol "Tambah Item"
-    
+
     // Kosongkan dan reset semua input form tambah item
     itemNameInput.value = '';
     itemQuantityInput.value = '';
     itemUnitTypeInput.value = 'pcs'; // Atur nilai default 'pcs'
     itemCostPriceInput.value = '';
     itemSellingPriceInput.value = '';
-    
+
     inventarisFormMessage.textContent = ''; // Kosongkan pesan
     inventarisFormMessage.className = 'message';
 });
@@ -935,4 +935,5 @@ saveInventarisBtn.addEventListener('click', async () => {
         await loadInventarisData(); // Muat ulang data inventaris untuk menampilkan yang baru
     }
 });
-});
+// The closing '});' that was here was incorrectly closing the logoutBtn.addEventListener.
+// It has been removed from here as it was a syntax error.
