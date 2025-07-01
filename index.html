@@ -43,33 +43,10 @@
 
             <button id="addInventarisBtn">Tambah Item</button>
 
-            <div id="add-inventaris-form" style="display: none;" class="form-container">
-			   <div class="filter-controls">
+            <div class="filter-controls">
                 <input type="text" id="searchItemInput" placeholder="Cari Kode atau Nama Item...">
                 <select id="filterUnitType">
-                <option value="">Semua Satuan</option>
-                <option value="pcs">Pcs</option>
-                <option value="pack">Pack</option>
-                <option value="bungkus">Bungkus</option>
-                <option value="unit">Unit</option>
-                <option value="kg">Kg</option>
-                <option value="liter">Liter</option>
-              </select>
-            </div>
-               <div class="pagination-controls">
-                <button id="prevPageBtn" disabled>&lt; Sebelumnya</button>
-               <div id="pageNumbers"></div>
-                <button id="nextPageBtn">&gt; Berikutnya</button>
-               </div>
-                <h3>Tambah Item Inventaris Baru</h3>
-                <label for="itemName">Nama Item:</label>
-                <input type="text" id="itemName" placeholder="Nama Item" required>
-
-                <label for="itemQuantity">Jumlah:</label>
-                <input type="number" id="itemQuantity" placeholder="Jumlah" required min="0">
-
-                <label for="itemUnitType">Satuan:</label>
-                <select id="itemUnitType" required>
+                    <option value="">Semua Satuan</option>
                     <option value="pcs">Pcs</option>
                     <option value="pack">Pack</option>
                     <option value="bungkus">Bungkus</option>
@@ -77,48 +54,80 @@
                     <option value="kg">Kg</option>
                     <option value="liter">Liter</option>
                 </select>
+            </div>
+            <div id="add-inventaris-form" style="display: none;" class="form-container">
+                <h3>Tambah Item Inventaris Baru</h3>
+                <form id="addItemForm">
+                    <label for="itemName">Nama Item:</label>
+                    <input type="text" id="itemName" required>
+                    <span id="itemNameError" class="validation-message"></span>
 
-                <label for="itemCostPrice">Harga Modal:</label>
-                <input type="number" id="itemCostPrice" placeholder="Harga Modal" step="0.01" required min="0">
+                    <label for="itemQuantity">Jumlah:</label>
+                    <input type="number" id="itemQuantity" min="0" required>
+                    <span id="itemQuantityError" class="validation-message"></span>
 
-                <label for="itemSellingPrice">Harga Jual:</label>
-                <input type="number" id="itemSellingPrice" placeholder="Harga Jual" step="0.01" required min="0">
-                
-                <button id="saveInventarisBtn">Simpan Item</button>
-                <button id="cancelAddInventarisBtn">Batal</button>
+                    <label for="itemUnitType">Satuan:</label>
+                    <select id="itemUnitType" required>
+                        <option value="pcs">Pcs</option>
+                        <option value="pack">Pack</option>
+                        <option value="bungkus">Bungkus</option>
+                        <option value="unit">Unit</option>
+                        <option value="kg">Kg</option>
+                        <option value="liter">Liter</option>
+                    </select>
+                    <span id="itemUnitTypeError" class="validation-message"></span>
+
+                    <label for="itemCostPrice">Harga Modal:</label>
+                    <input type="number" id="itemCostPrice" min="0" step="0.01" required>
+                    <span id="itemCostPriceError" class="validation-message"></span>
+
+                    <label for="itemSellingPrice">Harga Jual:</label>
+                    <input type="number" id="itemSellingPrice" min="0" step="0.01" required>
+                    <span id="itemSellingPriceError" class="validation-message"></span>
+
+                    <div class="form-actions">
+                        <button type="button" id="saveInventarisBtn">Simpan</button>
+                        <button type="button" id="cancelAddInventarisBtn">Batal</button>
+                    </div>
+                </form>
                 <p id="inventaris-form-message" class="message"></p>
             </div>
 
             <div id="inventaris-data">
-        <p>Memuat data inventaris...</p>
-            <table>
-               <thead>
-                <tr>
-                <th>Kode Item</th>       
-                <th>Nama Item</th>
-                <th>Jumlah</th>
-                <th>Satuan</th>
-                <th>Harga Modal</th>
-                <th>Harga Jual</th>
-                <th>Keuntungan/Item</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody id="inventarisTableBody">
-        </tbody>
-    </table>
-</div>
-        <!-- <button id="logoutBtn">Logout</button> --> 
+                <div class="pagination-controls">
+                    <button id="prevPageBtn" disabled>&lt; Sebelumnya</button>
+                    <div id="pageNumbers"></div>
+                    <button id="nextPageBtn">&gt; Berikutnya</button>
+                </div>
+                <h3>Daftar Item Inventaris Anda</h3>
+                <p>Memuat data inventaris...</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Kode Item</th>
+                            <th>Nama Item</th>
+                            <th>Jumlah</th>
+                            <th>Satuan</th>
+                            <th>Harga Modal</th>
+                            <th>Harga Jual</th>
+                            <th>Keuntungan/Item</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventarisTableBody">
+                    </tbody>
+                </table>
+            </div>
         </section>
 
         <section id="admin-login-section" class="card">
             <h2>Login Admin</h2>
             <input type="email" id="adminEmail" placeholder="Email Admin">
             <input type="password" id="adminPassword" placeholder="Password Admin">
-            <button id="adminLoginBtn">Login Admin</button> 
-            <p id="adminLoginMessage" class="message"></p> 
+            <button id="adminLoginBtn">Login Admin</button>
+            <p id="adminLoginMessage" class="message"></p>
         </section>
-        
+
         <section id="admin-panel-section" class="card" style="display: none;">
             <h2>Panel Admin Lisensi</h2>
             <button id="refreshLicensesBtn">Refresh Data Lisensi</button>
@@ -135,7 +144,7 @@
                             <th>Aksi</th>
                         </tr>
                     </thead>
-                    <tbody id="licenses-table-body"> 
+                    <tbody id="licenses-table-body">
                     </tbody>
                 </table>
             </div>
@@ -145,18 +154,19 @@
         <div id="editItemModal" class="modal">
             <div class="modal-content">
                 <span class="close-button">&times;</span>
-                <h2>Edit Item Inventaris</h2>
+                <h3>Edit Item Inventaris</h3>
                 <form id="editItemForm">
                     <input type="hidden" id="editItemId">
-                    
+
                     <label for="editItemCode">Kode Item:</label>
                     <input type="text" id="editItemCode" readonly>
-                    
                     <label for="editItemName">Nama Item:</label>
                     <input type="text" id="editItemName" required>
+                    <span id="editItemNameError" class="validation-message"></span>
 
                     <label for="editQuantity">Jumlah:</label>
                     <input type="number" id="editQuantity" required min="0">
+                    <span id="editQuantityError" class="validation-message"></span>
 
                     <label for="editUnitType">Satuan:</label>
                     <select id="editUnitType" required>
@@ -167,15 +177,20 @@
                         <option value="kg">Kg</option>
                         <option value="liter">Liter</option>
                     </select>
+                    <span id="editUnitTypeError" class="validation-message"></span>
 
                     <label for="editCostPrice">Harga Modal:</label>
                     <input type="number" id="editCostPrice" step="0.01" required min="0">
+                    <span id="editCostPriceError" class="validation-message"></span>
 
                     <label for="editSellingPrice">Harga Jual:</label>
                     <input type="number" id="editSellingPrice" step="0.01" required min="0">
-                    
-                    <button type="submit" id="saveEditBtn">Simpan Perubahan</button>
-                    <button type="button" id="cancelEditBtn">Batal</button>
+                    <span id="editSellingPriceError" class="validation-message"></span>
+
+                    <div class="form-actions">
+                        <button type="submit" id="saveEditBtn">Simpan Perubahan</button>
+                        <button type="button" id="cancelEditBtn">Batal</button>
+                    </div>
                 </form>
             </div>
         </div>
