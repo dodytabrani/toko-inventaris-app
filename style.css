@@ -442,3 +442,74 @@ table td button {
     color: #dc3545; /* Red */
     font-weight: bold;
 }
+/* CSS UNTUK KONTROL PENCARIAN, FILTER, & PAGINASI */
+.filter-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap; /* Untuk tampilan responsif di layar kecil */
+}
+
+.filter-controls input,
+.filter-controls select {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+    flex: 1; /* Agar mengambil ruang yang tersedia */
+    min-width: 150px; /* Lebar minimum */
+}
+
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 20px; /* Agar ada spasi di bawahnya */
+}
+
+.pagination-controls button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.2s ease;
+}
+
+.pagination-controls button:hover:not(:disabled) {
+    background-color: #0056b3;
+}
+
+.pagination-controls button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+#pageNumbers {
+    margin: 0 15px;
+    display: flex;
+    gap: 8px;
+}
+
+.page-number {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #f0f0f0;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.page-number:hover:not(.active) {
+    background-color: #e0e0e0;
+}
+
+.page-number.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+    font-weight: bold;
+}
