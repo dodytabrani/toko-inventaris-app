@@ -1052,3 +1052,4 @@ if (unitTypeFilter) {
 //       loadInventarisData(); // Panggil pertama kali saat halaman dimuat
 //       // ... logika inisialisasi lainnya
 // });
+}); // Ini adalah penutup untuk document.addEventListener('DOMContentLoaded', async () => {
