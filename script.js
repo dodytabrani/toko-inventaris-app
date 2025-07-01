@@ -1,3 +1,4 @@
+document.addEventListener('DOMContentLoaded', async () => {
 // --- 1. INISIALISASI SUPABASE ---
 // GANTI DENGAN KREDENSIAL PROYEK SUPABASE ANDA YANG BARU!
 const SUPABASE_URL = 'https://sjxhosrvcmejqprooofk.supabase.co'; // Contoh: 'https://abcdefghijk.supabase.co'
