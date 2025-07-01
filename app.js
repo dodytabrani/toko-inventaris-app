@@ -1,8 +1,5 @@
-// 1. Inisialisasi Supabase
-const SUPABASE_URL = 'https://sjxhosrvcmejqprooofk.supabase.co'; // Ganti dengan URL Supabase Anda
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNqeGhvc3J2Y21lanFwcm9vb2ZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEyMzIxMzEsImV4cCI6MjA2NjgwODEzMX0.n3RmP7ouaZSPBuymRi6axXWZQc_DJKi2gX0VEeV3o4U'; // Ganti dengan Anon Key Supabase Anda
-
-const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// 1. Inisialisasi Variabel Supabase (akan didefinisikan di dalam DOMContentLoaded)
+let supabase;
 
 // 2. Deklarasi Elemen DOM (Pastikan ID ini cocok dengan HTML Anda)
 // Autentikasi
@@ -440,6 +437,12 @@ function openEditModal(item) {
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('--- DOMContentLoaded: Skrip dimulai ---');
 
+    // Inisialisasi Supabase di sini
+    const SUPABASE_URL = 'https://sjxhosrvcmejqprooofk.supabase.co'; // Ganti dengan URL Supabase Anda
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNqeGhvc3J2Y21lanFwcm9vb2ZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEyMzIxMzEsImV4cCI6MjA2NjgwODEzMX0.n3RmP7ouaZSPBuymRi6axXWZQc_DJKi2gX0VEeV3o4U'; // Ganti dengan Anon Key Supabase Anda
+    supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    console.log('--- DOMContentLoaded: Supabase client diinisialisasi ---');
+
     // Cek sesi Supabase saat aplikasi dimuat
     const { data: { session } } = await supabase.auth.getSession();
     if (session) {
@@ -476,12 +479,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Event Listener untuk Edit/Delete (delegasi event)
     if (inventarisDataDiv) {
-        inventarisDataDiv.addEventListener('touchend', async (e) => { // Menggunakan touchend untuk mobile
-            console.log('--- inventarisDataDiv touchend dipicu ---');
+        // Menggunakan 'click' karena touchend bisa memiliki perilaku yang berbeda di beberapa browser
+        inventarisDataDiv.addEventListener('click', async (e) => { 
+            console.log('--- inventarisDataDiv click dipicu ---');
             console.log('Target event:', e.target);
 
             // Cek apakah yang diklik adalah tombol Edit
             if (e.target.matches('.edit-item-btn')) {
+                e.preventDefault(); // Mencegah perilaku default jika ada (misal: navigasi)
                 console.log('Tombol Edit diklik!');
                 const itemId = e.target.dataset.id;
                 console.log('Tombol Edit diklik untuk ID:', itemId);
@@ -508,6 +513,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // Cek apakah yang diklik adalah tombol Hapus
             if (e.target.matches('.delete-item-btn')) {
+                e.preventDefault(); // Mencegah perilaku default jika ada
                 console.log('Tombol Hapus diklik!');
                 const itemId = e.target.dataset.id;
                 console.log('Tombol Hapus diklik untuk ID:', itemId);
@@ -875,7 +881,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                         unit_type: itemUnitType,
                         cost_price: itemCostPrice,
                         selling_price: itemSellingPrice,
-                        item_code: newItemCode
+                        item_code: newItemCode,
+                        user_id: user.id // Penting: tambahkan user_id di sini
                     }
                 ]);
 
