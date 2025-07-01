@@ -1050,3 +1050,4 @@ if (unitTypeFilter) {
     console.error('ERROR: Elemen unitTypeFilter tidak ditemukan! Pastikan ID HTML sudah benar.');
 }
 });
+});
