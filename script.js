@@ -414,6 +414,57 @@ inventarisDataDiv.innerHTML = html;
         }
     }
 }
+// Letakkan kode ini SETELAH fungsi loadInventarisData() Anda,
+// di tempat yang akan dijalankan ketika halaman dimuat (misalnya, paling bawah file).
+
+inventarisDataDiv.addEventListener('click', async (e) => {
+    // Cek apakah yang diklik adalah tombol Edit
+    if (e.target.matches('.edit-item-btn')) {
+        const itemId = e.target.dataset.id;
+        // console.log('Tombol Edit diklik untuk ID:', itemId); // Baris ini bisa dihapus nanti setelah yakin berfungsi
+
+        // Penting: Ambil data item yang spesifik dari Supabase (ini yang mengatasi masalah 'data.find')
+        const { data: itemToEdit, error } = await supabase
+            .from('inventories')
+            .select('*')
+            .eq('id', itemId)
+            .single(); // Mengambil hanya satu item berdasarkan ID-nya
+
+        if (error) {
+            console.error("Error fetching item for edit:", error.message);
+            alert('Gagal mengambil detail item untuk diedit. Pastikan RLS Anda benar.');
+            return;
+        }
+
+        if (itemToEdit) {
+            openEditModal(itemToEdit);
+        } else {
+            console.error('Item with ID not found (after re-fetch):', itemId);
+            alert('Item tidak ditemukan atau ada masalah saat memuat data. Mohon cek kembali.');
+        }
+    }
+
+    // Cek apakah yang diklik adalah tombol Hapus
+    if (e.target.matches('.delete-item-btn')) {
+        const itemId = e.target.dataset.id;
+        // console.log('Tombol Hapus diklik untuk ID:', itemId); // Baris ini bisa dihapus nanti setelah yakin berfungsi
+
+        if (confirm('Apakah Anda yakin ingin menghapus item ini?')) {
+            const { error: deleteError } = await supabase
+                .from('inventories')
+                .delete()
+                .eq('id', itemId);
+
+            if (deleteError) {
+                console.error("Error deleting inventaris:", deleteError.message);
+                alert('Gagal menghapus item: ' + deleteError.message);
+            } else {
+                alert('Item berhasil dihapus!');
+                loadInventarisData(); // Muat ulang data setelah penghapusan
+            }
+        }
+    }
+});
 
 // --- FUNGSI MODAL EDIT ITEM ---
 function openEditModal(item) {
