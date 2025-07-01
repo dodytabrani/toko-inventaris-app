@@ -329,12 +329,13 @@ async function loadInventarisData() {
         .select('*')
         .eq('user_id', user.id) // Penting: Hanya ambil data user yang login
         .order('created_at', { ascending: false }); // Urutkan berdasarkan tanggal terbaru
+		inventarisDataCache = data; // <--- TAMBAHKAN HANYA BARIS INI
 
     if (error) {
         console.error("Error loading inventaris:", error.message);
         inventarisDataDiv.innerHTML = '<p class="message error">Gagal memuat data inventaris. Pastikan RLS diatur dengan benar.</p>';
     } else {
-        if (data.length === 0) {
+        if (inventarisDataCache.length === 0) { // <--- UBAH 'data' menjadi 'inventarisDataCache'
             inventarisDataDiv.innerHTML = '<p>Anda belum memiliki item inventaris. Klik "Tambah Item" untuk memulai.</p>';
         } else {
             let html = `
@@ -349,7 +350,7 @@ async function loadInventarisData() {
                     </thead>
                     <tbody>
             `;
-            data.forEach(item => {
+            inventarisDataCache.forEach(item => { // <--- UBAH 'data' menjadi 'inventarisDataCache'
     const profitPerItem = (item.selling_price || 0) - (item.cost_price || 0);
     const formattedCostPrice = item.cost_price ? `Rp ${item.cost_price.toLocaleString('id-ID')}` : 'Rp 0';
     const formattedSellingPrice = item.selling_price ? `Rp ${item.selling_price.toLocaleString('id-ID')}` : 'Rp 0';
@@ -381,7 +382,7 @@ inventarisDataDiv.innerHTML = html;
             document.querySelectorAll('.edit-item-btn').forEach(button => {
                 button.addEventListener('click', (e) => {
                     const itemId = e.target.dataset.id;
-                    const itemToEdit = data.find(item => item.id === itemId);
+                    const itemToEdit = inventarisDataCache.find(item => item.id === Number(itemId)); // <--- UBAH 'data' menjadi 'inventarisDataCache'
                     if (itemToEdit) {
                         console.log('Item ditemukan:', itemToEdit);
                         openEditModal(itemToEdit);
