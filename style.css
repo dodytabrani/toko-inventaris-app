@@ -232,10 +232,10 @@ table td button {
     font-size: 0.85em;
     margin-right: 5px; /* Closer spacing for action buttons */
     border-radius: 4px;
-    /* --- Perubahan/Tambahan Penting untuk Responsivitas Klik --- */
     position: relative; /* Penting: agar z-index berfungsi pada tombol */
     z-index: 100;     /* Pastikan tombol di atas elemen lain di sel tabel */
-    /* --- Akhir Perubahan/Tambahan Penting --- */
+    min-height: 35px; /* Pastikan tinggi minimal untuk area sentuh */
+    box-sizing: border-box; /* Pastikan padding dan border masuk perhitungan tinggi/lebar */
 }
 
 /* Profit/Loss styling */
@@ -332,7 +332,7 @@ table td button {
     padding: 12px 25px;
     margin-top: 15px; /* Space above buttons */
     margin-right: 15px;
-    border-radius: 66px;
+    border-radius: 6px; /* Corrected typo: was 66px */
     font-size: 1.05em;
 }
 
@@ -388,13 +388,11 @@ table td button {
         white-space: normal; /* Allow text to wrap on mobile */
     }
 
-    /* --- Perubahan/Tambahan Penting untuk Responsivitas Klik --- */
     table td[data-label="Aksi"] {
         /* Memberikan sedikit lebih banyak ruang di sekitar tombol di sel Aksi */
         padding-top: 15px;
         padding-bottom: 15px;
     }
-    /* --- Akhir Perubahan/Tambahan Penting --- */
 
     table td:not(:last-child) {
         border-bottom: 1px solid #eee; /* Add separator between stacked cells */
@@ -409,10 +407,8 @@ table td button {
         text-align: left;
         font-weight: 600;
         color: #555;
-        /* --- Perubahan/Tambahan Penting untuk Responsivitas Klik --- */
         width: 40%; /* Sedikit kurangi lebar label agar tidak menutupi tombol */
         pointer-events: none; /* Penting: Pastikan label ini tidak menangkap event klik */
-        /* --- Akhir Perubahan/Tambahan Penting --- */
     }
     /* Specific labels for each column in responsive mode */
     table td:nth-of-type(1):before { content: "Kode Item:"; }
