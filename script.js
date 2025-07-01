@@ -678,22 +678,24 @@ loginBtn.addEventListener('click', async () => {
 });
 
 // Logout User dari App Section
-logoutBtn.addEventListener('click', async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-        console.error("Logout error:", error.message);
-        alert('Gagal logout: ' + error.message);
-    } else {
-        alert('Logout berhasil!');
-        // Kembali ke halaman autentikasi
-        authSection.style.display = 'block';
-        appSection.style.display = 'none';
-        adminPanelSection.style.display = 'none';
-        adminLoginSection.style.display = 'block';
-        mainLoginBtn.style.display = 'inline-block';
-        mainLogoutBtn.style.display = 'none';
-    }
-});
+if (logoutBtn) { // <--- Ini awal if statement
+    logoutBtn.addEventListener('click', async () => {
+        const { error } = await supabase.auth.signOut();
+        if (error) {
+            console.error("Logout error:", error.message);
+            alert('Gagal logout: ' + error.message);
+        } else {
+            alert('Logout berhasil!');
+            // Kembali ke halaman autentikasi
+            authSection.style.display = 'block';
+            appSection.style.display = 'none';
+            adminPanelSection.style.display = 'none';
+            adminLoginSection.style.display = 'block';
+            mainLoginBtn.style.display = 'inline-block';
+            mainLogoutBtn.style.display = 'none';
+        }
+    }); // Ini akhir dari addEventListener
+} // <--- INI KURUNG KURAWAL PENUTUP YANG HILANG DAN PERLU DITAMBAHKAN
 
 // Admin Login
 adminLoginBtn.addEventListener('click', async () => {
