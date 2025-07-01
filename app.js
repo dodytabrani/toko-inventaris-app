@@ -473,111 +473,116 @@ async function loadInventarisData(searchTerm = '', filterUnitType = '') { // <<<
             // --- PENTING: TIDAK ADA lagi event listener .forEach() di sini ---
         }
     }
-}
+} // <--- PENUTUP UNTUK loadInventarisData()
+
 
 // --- Event Listener Delegasi Baru (yang menggantikan forEach lama) ---
 // Letakkan blok kode ini SETELAH fungsi loadInventarisData() Anda,
 // di tempat yang akan dijalankan ketika halaman dimuat (misalnya, di dekat bagian bawah file script.js Anda).
-inventarisDataDiv.addEventListener('click', async (e) => {
-    // Cek apakah yang diklik adalah tombol Edit
-    if (e.target.matches('.edit-item-btn')) {
-        const itemId = e.target.dataset.id;
-        console.log('ID Item yang diklik:', itemId); // Untuk debugging
+if (inventarisDataDiv) { // <--- Tambahkan if check
+    inventarisDataDiv.addEventListener('click', async (e) => {
+        // Cek apakah yang diklik adalah tombol Edit
+        if (e.target.matches('.edit-item-btn')) {
+            const itemId = e.target.dataset.id;
+            console.log('ID Item yang diklik:', itemId); // Untuk debugging
 
-        // Ambil data item yang spesifik dari Supabase (ini yang mengatasi masalah 'data.find')
-        const { data: itemToEdit, error } = await supabase
-            .from('inventories')
-            .select('*')
-            .eq('id', itemId)
-            .single(); // Mengambil hanya satu item berdasarkan ID-nya
-
-        if (error) {
-            console.error("Error fetching item for edit:", error.message);
-            alert('Gagal mengambil detail item untuk diedit. Pastikan RLS Supabase Anda benar.');
-            return;
-        }
-
-        if (itemToEdit) {
-            console.log('Item berhasil ditemukan:', itemToEdit); // Untuk debugging
-            openEditModal(itemToEdit);
-        } else {
-            console.error('Item with ID not found (after re-fetch):', itemId);
-            alert('Item tidak ditemukan atau ada masalah saat memuat data. Mohon cek kembali.');
-        }
-    }
-
-    // Cek apakah yang diklik adalah tombol Hapus
-    if (e.target.matches('.delete-item-btn')) {
-        const itemId = e.target.dataset.id;
-        console.log('Tombol Hapus diklik untuk ID:', itemId); // Untuk debugging
-
-        if (confirm('Apakah Anda yakin ingin menghapus item ini?')) {
-            const { error: deleteError } = await supabase
+            // Ambil data item yang spesifik dari Supabase (ini yang mengatasi masalah 'data.find')
+            const { data: itemToEdit, error } = await supabase
                 .from('inventories')
-                .delete()
-                .eq('id', itemId);
+                .select('*')
+                .eq('id', itemId)
+                .single(); // Mengambil hanya satu item berdasarkan ID-nya
 
-            if (deleteError) {
-                console.error("Error deleting inventaris:", deleteError.message);
-                alert('Gagal menghapus item: ' + deleteError.message);
+            if (error) {
+                console.error("Error fetching item for edit:", error.message);
+                alert('Gagal mengambil detail item untuk diedit. Pastikan RLS Supabase Anda benar.');
+                return;
+            }
+
+            if (itemToEdit) {
+                console.log('Item berhasil ditemukan:', itemToEdit); // Untuk debugging
+                openEditModal(itemToEdit);
             } else {
-                alert('Item berhasil dihapus!');
-                loadInventarisData(); // Muat ulang data setelah penghapusan
+                console.error('Item with ID not found (after re-fetch):', itemId);
+                alert('Item tidak ditemukan atau ada masalah saat memuat data. Mohon cek kembali.');
             }
         }
-    }
-});
-// Letakkan kode ini SETELAH fungsi loadInventarisData() Anda,
-// di tempat yang akan dijalankan ketika halaman dimuat (misalnya, paling bawah file).
 
-inventarisDataDiv.addEventListener('touchend', async (e) => {
-    // Cek apakah yang diklik adalah tombol Edit
-    if (e.target.matches('.edit-item-btn')) {
-        const itemId = e.target.dataset.id;
-        // console.log('Tombol Edit diklik untuk ID:', itemId); // Baris ini bisa dihapus nanti setelah yakin berfungsi
+        // Cek apakah yang diklik adalah tombol Hapus
+        if (e.target.matches('.delete-item-btn')) {
+            const itemId = e.target.dataset.id;
+            console.log('Tombol Hapus diklik untuk ID:', itemId); // Untuk debugging
 
-        // Penting: Ambil data item yang spesifik dari Supabase (ini yang mengatasi masalah 'data.find')
-        const { data: itemToEdit, error } = await supabase
-            .from('inventories')
-            .select('*')
-            .eq('id', itemId)
-            .single(); // Mengambil hanya satu item berdasarkan ID-nya
+            if (confirm('Apakah Anda yakin ingin menghapus item ini?')) {
+                const { error: deleteError } = await supabase
+                    .from('inventories')
+                    .delete()
+                    .eq('id', itemId);
 
-        if (error) {
-            console.error("Error fetching item for edit:", error.message);
-            alert('Gagal mengambil detail item untuk diedit. Pastikan RLS Anda benar.');
-            return;
-        }
-
-        if (itemToEdit) {
-            openEditModal(itemToEdit);
-        } else {
-            console.error('Item with ID not found (after re-fetch):', itemId);
-            alert('Item tidak ditemukan atau ada masalah saat memuat data. Mohon cek kembali.');
-        }
-    }
-
-    // Cek apakah yang diklik adalah tombol Hapus
-    if (e.target.matches('.delete-item-btn')) {
-        const itemId = e.target.dataset.id;
-        // console.log('Tombol Hapus diklik untuk ID:', itemId); // Baris ini bisa dihapus nanti setelah yakin berfungsi
-
-        if (confirm('Apakah Anda yakin ingin menghapus item ini?')) {
-            const { error: deleteError } = await supabase
-                .from('inventories')
-                .delete()
-                .eq('id', itemId);
-
-            if (deleteError) {
-                console.error("Error deleting inventaris:", deleteError.message);
-                alert('Gagal menghapus item: ' + deleteError.message);
-            } else {
-                alert('Item berhasil dihapus!');
-                loadInventarisData(); // Muat ulang data setelah penghapusan
+                if (deleteError) {
+                    console.error("Error deleting inventaris:", deleteError.message);
+                    alert('Gagal menghapus item: ' + deleteError.message);
+                } else {
+                    alert('Item berhasil dihapus!');
+                    loadInventarisData(); // Muat ulang data setelah penghapusan
+                }
             }
         }
-    }
-});
+    });
+}
+
+
+if (inventarisDataDiv) { // <--- Tambahkan if check (untuk touchend)
+    inventarisDataDiv.addEventListener('touchend', async (e) => {
+        // Cek apakah yang diklik adalah tombol Edit
+        if (e.target.matches('.edit-item-btn')) {
+            const itemId = e.target.dataset.id;
+            // console.log('Tombol Edit diklik untuk ID:', itemId); // Baris ini bisa dihapus nanti setelah yakin berfungsi
+
+            // Penting: Ambil data item yang spesifik dari Supabase (ini yang mengatasi masalah 'data.find')
+            const { data: itemToEdit, error } = await supabase
+                .from('inventories')
+                .select('*')
+                .eq('id', itemId)
+                .single(); // Mengambil hanya satu item berdasarkan ID-nya
+
+            if (error) {
+                console.error("Error fetching item for edit:", error.message);
+                alert('Gagal mengambil detail item untuk diedit. Pastikan RLS Anda benar.');
+                return;
+            }
+
+            if (itemToEdit) {
+                openEditModal(itemToEdit);
+            } else {
+                console.error('Item with ID not found (after re-fetch):', itemId);
+                alert('Item tidak ditemukan atau ada masalah saat memuat data. Mohon cek kembali.');
+            }
+        }
+
+        // Cek apakah yang diklik adalah tombol Hapus
+        if (e.target.matches('.delete-item-btn')) {
+            const itemId = e.target.dataset.id;
+            // console.log('Tombol Hapus diklik untuk ID:', itemId); // Baris ini bisa dihapus nanti setelah yakin berfungsi
+
+            if (confirm('Apakah Anda yakin ingin menghapus item ini?')) {
+                const { error: deleteError } = await supabase
+                    .from('inventories')
+                    .delete()
+                    .eq('id', itemId);
+
+                if (deleteError) {
+                    console.error("Error deleting inventaris:", deleteError.message);
+                    alert('Gagal menghapus item: ' + deleteError.message);
+                } else {
+                    alert('Item berhasil dihapus!');
+                    loadInventarisData(); // Muat ulang data setelah penghapusan
+                }
+            }
+        }
+    });
+}
+
 
 // --- FUNGSI MODAL EDIT ITEM ---
 function openEditModal(item) {
@@ -718,7 +723,7 @@ if (editItemForm) {
 // --- 4. EVENT LISTENERS UTAMA (NON-MODAL) ---
 
 // Tombol Login/Daftar Utama (Header)
-if (mainLoginBtn) { // <<<--- Tambahkan if check untuk menghindari error jika elemen tidak ada
+if (mainLoginBtn) {
     mainLoginBtn.addEventListener('click', () => {
         authSection.style.display = 'block';
         appSection.style.display = 'none';
@@ -729,9 +734,8 @@ if (mainLoginBtn) { // <<<--- Tambahkan if check untuk menghindari error jika el
     });
 }
 
-
 // Tombol Logout Utama (Header)
-if (mainLogoutBtn) { // <<<--- Tambahkan if check
+if (mainLogoutBtn) {
     mainLogoutBtn.addEventListener('click', async () => {
         const { error } = await supabase.auth.signOut();
         if (error) {
@@ -750,9 +754,8 @@ if (mainLogoutBtn) { // <<<--- Tambahkan if check
     });
 }
 
-
 // Daftar User
-if (signupBtn) { // <<<--- Tambahkan if check
+if (signupBtn) {
     signupBtn.addEventListener('click', async () => {
         const email = signupEmailInput.value;
         const password = signupPasswordInput.value;
@@ -790,6 +793,7 @@ if (signupBtn) { // <<<--- Tambahkan if check
                 // await checkUserRoleAndRedirect(data.user); // Opsional: langsung login
             }
         } else {
+            // Ini mungkin terjadi jika email confirmation diaktifkan dan user belum konfirmasi
             signupMessage.textContent = 'Pendaftaran berhasil. Silakan cek email Anda untuk konfirmasi.';
             signupMessage.className = 'message info';
             signupEmailInput.value = '';
@@ -798,9 +802,8 @@ if (signupBtn) { // <<<--- Tambahkan if check
     });
 }
 
-
 // Login User
-if (loginBtn) { // <<<--- Tambahkan if check
+if (loginBtn) {
     loginBtn.addEventListener('click', async () => {
         const email = loginEmailInput.value;
         const password = loginPasswordInput.value;
@@ -846,11 +849,10 @@ if (logoutBtn) {
             mainLogoutBtn.style.display = 'none';
         }
     });
-} // <<<--- PERBAIKAN SYNTAX: Kurung kurawal penutup yang hilang
-
+}
 
 // Admin Login
-if (adminLoginBtn) { // <<<--- Tambahkan if check
+if (adminLoginBtn) {
     adminLoginBtn.addEventListener('click', async () => {
         const email = adminEmailInput.value;
         const password = adminPasswordInput.value;
@@ -892,9 +894,8 @@ if (adminLoginBtn) { // <<<--- Tambahkan if check
     });
 }
 
-
 // Admin Logout
-if (adminLogoutBtn) { // <<<--- Tambahkan if check
+if (adminLogoutBtn) {
     adminLogoutBtn.addEventListener('click', async () => {
         const { error } = await supabase.auth.signOut();
         if (error) {
@@ -913,14 +914,12 @@ if (adminLogoutBtn) { // <<<--- Tambahkan if check
     });
 }
 
-
-if (refreshLicensesBtn) { // <<<--- Tambahkan if check
+if (refreshLicensesBtn) {
     refreshLicensesBtn.addEventListener('click', loadLicensesData);
 }
 
-
 /// Event listener untuk tombol "Tambah Item"
-if (addInventarisBtn) { // <<<--- Tambahkan if check
+if (addInventarisBtn) {
     addInventarisBtn.addEventListener('click', () => {
         addInventarisForm.style.display = 'block'; // Tampilkan form
         addInventarisBtn.style.display = 'none'; // Sembunyikan tombol "Tambah Item"
@@ -937,18 +936,16 @@ if (addInventarisBtn) { // <<<--- Tambahkan if check
     });
 }
 
-
 // Event listener untuk tombol "Batal" di form tambah item
-if (cancelAddInventarisBtn) { // <<<--- Tambahkan if check
+if (cancelAddInventarisBtn) {
     cancelAddInventarisBtn.addEventListener('click', () => {
         addInventarisForm.style.display = 'none'; // Sembunyikan form
         addInventarisBtn.style.display = 'inline-block'; // Tampilkan kembali tombol "Tambah Item"
     });
 }
 
-
 // Event listener untuk tombol "Simpan Item"
-if (saveInventarisBtn) { // <<<--- Tambahkan if check
+if (saveInventarisBtn) {
     saveInventarisBtn.addEventListener('click', async () => {
         const itemName = itemNameInput.value.trim();
         const itemQuantity = parseInt(itemQuantityInput.value);
@@ -1021,9 +1018,6 @@ if (saveInventarisBtn) { // <<<--- Tambahkan if check
         }
     });
 }
-// <<<--- PERBAIKAN SYNTAX: Hapus }); yang tidak pada tempatnya di sini.
-// Potongan script Anda diakhiri dengan }); yang merupakan penutup dari addEventListener sebelumnya.
-// Jika ini adalah akhir file Anda, pastikan tidak ada karakter sisa.
 
 
 // --- BARU: Event Listener untuk Pencarian dan Filter ---
@@ -1049,4 +1043,13 @@ if (unitTypeFilter) {
 } else {
     console.error('ERROR: Elemen unitTypeFilter tidak ditemukan! Pastikan ID HTML sudah benar.');
 }
-// Tidak ada }); lagi di sini.
+
+// --- Contoh Pemanggilan Awal (Jika script Anda dijalankan saat DOM siap) ---
+// Jika Anda memanggil loadInventarisData() secara langsung di awal, pastikan
+// untuk memanggilnya tanpa parameter atau dengan parameter default yang kosong
+// agar tidak ada error di awal.
+// Contoh:
+// document.addEventListener('DOMContentLoaded', () => {
+//     loadInventarisData(); // Panggil pertama kali saat halaman dimuat
+//     // ... logika inisialisasi lainnya
+// });
