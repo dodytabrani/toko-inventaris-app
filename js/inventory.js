@@ -55,12 +55,13 @@ export async function checkLicenseStatusAndToggleAddButton() {
         if (licenseStatusP) licenseStatusP.className = 'message error';
         if (addInventarisBtn) addInventarisBtn.style.display = 'none';
         return false;
-    } else {
-        if (licenseStatusP) licenseStatusP.textContent = `Lisensi Anda aktif hingga ${new Date(license.expiry_date).toLocaleDateString()}.`;
-        if (licenseStatusP) licenseStatusP.className = 'message success';
-        if (addInventarisBtn) addInventarisBtn.style.display = 'inline-block';
-        return true;
-    }
+    else {
+    // PERHATIKAN PERUBAHAN 'license' menjadi 'data' di bawah ini
+    if (licenseStatusP) licenseStatusP.textContent = `Lisensi Anda aktif hingga ${new Date(data.expiry_date).toLocaleDateString()}.`;
+    if (licenseStatusP) licenseStatusP.className = 'message success';
+    if (addInventarisBtn) addInventarisBtn.style.display = 'inline-block';
+    return true;
+}
 }
 
 export async function loadInventarisData(searchTerm = '', filterUnitType = '') {
