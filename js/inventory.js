@@ -1,4 +1,6 @@
 // js/inventory.js
+// js/inventory.js
+
 import { supabase } from './supabaseClient.js';
 import { generateUniqueItemCode } from './utils.js';
 import {
@@ -10,9 +12,13 @@ import {
     prevPageBtn, nextPageBtn,
     updatePaginationControls, displayFormMessage,
     openEditItemModal, closeEditItemModal,
+    // PASTIKAN BARIS INI ADA:
+    closeEditModalBtn, cancelEditBtn, // <--- Pastikan ini diimpor!
     editItemForm, editItemId, editItemName, editQuantity,
     editUnitType, editCostPrice, editSellingPrice
 } from './ui.js';
+
+// ... (sisa kode inventory.js Anda) ...
 
 let currentPage = 1;
 const ITEMS_PER_PAGE = 5;
