@@ -14,7 +14,6 @@ export const userEmailSpan = document.getElementById('userEmail');
 export const licenseStatusP = document.getElementById('license-status');
 
 // --- REFERENSI AUTENTIKASI (LOGIN/SIGNUP) ---
-// Ini adalah elemen-elemen yang memicu error "does not provide an export named 'loginBtn'" dll.
 export const signupEmailInput = document.getElementById('signupEmail');
 export const signupPasswordInput = document.getElementById('signupPassword');
 export const signupBtn = document.getElementById('signupBtn');
@@ -22,24 +21,23 @@ export const signupMessage = document.getElementById('signupMessage');
 
 export const loginEmailInput = document.getElementById('loginEmail');
 export const loginPasswordInput = document.getElementById('loginPassword');
-export const loginBtn = document.getElementById('loginBtn'); // Untuk tombol login di form
+export const loginBtn = document.getElementById('loginBtn');
 export const loginMessage = document.getElementById('loginMessage');
 
-export const logoutBtn = document.getElementById('logoutBtn'); // Tombol Logout di app-section
+export const logoutBtn = document.getElementById('logoutBtn');
 
 // --- REFERENSI ADMIN ---
 export const adminEmailInput = document.getElementById('adminEmail');
 export const adminPasswordInput = document.getElementById('adminPassword');
 export const adminLoginBtn = document.getElementById('adminLoginBtn');
 export const adminLoginMessage = document.getElementById('adminLoginMessage');
-export const licensesTableBody = document.getElementById('licenses-table-body'); // Pastikan ID ini benar di HTML
+export const licensesTableBody = document.getElementById('licenses-table-body');
 export const adminLogoutBtn = document.getElementById('adminLogoutBtn');
 export const refreshLicensesBtn = document.getElementById('refreshLicensesBtn');
 
-
 // Referensi Modal Edit
 export const editItemModal = document.getElementById('editItemModal');
-export const closeEditModalBtn = document.querySelector('#editItemModal .close-button');
+export const closeEditModalBtn = document.querySelector('#editItemModal .close-button'); // Menggunakan querySelector karena class
 export const cancelEditBtn = document.getElementById('cancelEditBtn');
 export const editItemForm = document.getElementById('editItemForm');
 export const editItemId = document.getElementById('editItemId');
@@ -69,6 +67,15 @@ export const unitTypeFilter = document.getElementById('filterUnitType');
 export const prevPageBtn = document.getElementById('prevPageBtn');
 export const nextPageBtn = document.getElementById('nextPageBtn');
 export const pageNumbersDiv = document.getElementById('pageNumbers');
+
+// --- REFERENSI BARU UNTUK HISTORI MODAL ---
+export const historyModal = document.getElementById('history-modal');
+export const closeHistoryModalBtn = document.getElementById('closeHistoryModalBtn');
+export const cancelHistoryBtn = document.getElementById('cancelHistoryBtn');
+export const historyItemName = document.getElementById('historyItemName');
+export const historyTableBody = document.getElementById('historyTableBody');
+export const inventarisTableBody = document.getElementById('inventarisTableBody'); // Ini sangat penting untuk render tabel!
+
 
 // Fungsi untuk menampilkan/menyembunyikan bagian UI
 export function showAuthSection() {
