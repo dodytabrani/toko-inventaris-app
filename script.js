@@ -381,7 +381,7 @@ inventarisDataDiv.innerHTML = html;
             document.querySelectorAll('.edit-item-btn').forEach(button => {
                 button.addEventListener('click', (e) => {
                     const itemId = e.target.dataset.id;
-                    const itemToEdit = data.find(item => item.id === itemId);
+                    const itemToEdit = data.find(item => item.id === Number(itemId)); // <--- UBAH DI SINI
                     if (itemToEdit) {
                         console.log('Item ditemukan:', itemToEdit);
                         openEditModal(itemToEdit);
