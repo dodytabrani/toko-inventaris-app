@@ -300,6 +300,8 @@ async function deleteLicense(licenseId) {
     }
 }
 
+// --- PASTIkan tidak ada 'let inventarisDataCache = [];' atau 'const loadedInventaris = ...' di atas ini ---
+
 // Muat Data Inventaris
 async function loadInventarisData() {
     const { data: { user } } = await supabase.auth.getUser();
@@ -318,7 +320,7 @@ async function loadInventarisData() {
 
     if (!license || !license.is_active || new Date(license.expiry_date) < new Date()) {
         inventarisDataDiv.innerHTML = '<p>Akses inventaris ditolak: Lisensi tidak aktif atau sudah kadaluarsa.</p>';
-        addInventarisBtn.style.display = 'none'; // Sembunyikan tombol tambah jika lisensi tidak aktif
+        addInventarisBtn.style.display = 'none'; // Sembunyikan tombol tambah jika lisensi aktif
         return;
     } else {
         addInventarisBtn.style.display = 'inline-block'; // Tampilkan tombol tambah jika lisensi aktif
@@ -341,79 +343,105 @@ async function loadInventarisData() {
                 <table>
                     <thead>
                         <tr>
+                            <th>Kode Item</th>
                             <th>Nama Item</th>
                             <th>Jumlah</th>
-                            <th>Harga Satuan</th>
+                            <th>Satuan</th>
+                            <th>Harga Modal</th>
+                            <th>Harga Jual</th>
+                            <th>Keuntungan/Item</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
             `;
             data.forEach(item => {
-    const profitPerItem = (item.selling_price || 0) - (item.cost_price || 0);
-    const formattedCostPrice = item.cost_price ? `Rp ${item.cost_price.toLocaleString('id-ID')}` : 'Rp 0';
-    const formattedSellingPrice = item.selling_price ? `Rp ${item.selling_price.toLocaleString('id-ID')}` : 'Rp 0';
-    const formattedProfit = `Rp ${profitPerItem.toLocaleString('id-ID')}`;
+                const profitPerItem = (item.selling_price || 0) - (item.cost_price || 0);
+                const formattedCostPrice = item.cost_price ? `Rp ${item.cost_price.toLocaleString('id-ID')}` : 'Rp 0';
+                const formattedSellingPrice = item.selling_price ? `Rp ${item.selling_price.toLocaleString('id-ID')}` : 'Rp 0';
+                const formattedProfit = `Rp ${profitPerItem.toLocaleString('id-ID')}`;
 
-    html += `
-        <tr>
-            <td data-label="Kode Item">${item.item_code || 'N/A'}</td>
-            <td data-label="Nama Item">${item.item_name}</td>
-            <td data-label="Jumlah">${item.quantity}</td>
-            <td data-label="Satuan">${item.unit_type || 'pcs'}</td>
-            <td data-label="Harga Modal">${formattedCostPrice}</td>
-            <td data-label="Harga Jual">${formattedSellingPrice}</td>
-            <td data-label="Keuntungan/Item" class="${profitPerItem < 0 ? 'text-red' : (profitPerItem > 0 ? 'text-green' : '')}">${formattedProfit}</td>
-            <td data-label="Aksi">
-                <button class="edit-item-btn" data-id="${item.id}">Edit</button>
-                <button class="delete-item-btn" data-id="${item.id}">Hapus</button>
-            </td>
-        </tr>
-    `;
-});
-html += `
-            </tbody>
-        </table>
-    `;
-inventarisDataDiv.innerHTML = html;
-
-            // Tambahkan event listener untuk tombol edit/hapus setelah elemen dibuat
-            document.querySelectorAll('.edit-item-btn').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const itemId = e.target.dataset.id;
-                    const itemToEdit = data.find(item => item.id === itemId);
-                    if (itemToEdit) {
-                        console.log('Item ditemukan:', itemToEdit);
-                        openEditModal(itemToEdit);
-                    } else {
-                        console.error('Item with ID not found:', itemId);
-                        alert('Gagal menemukan item untuk diedit.'); // Alert ini hanya untuk kasus error, bukan pop-up biasa.
-                    }
-                });
+                html += `
+                    <tr>
+                        <td data-label="Kode Item">${item.item_code || 'N/A'}</td>
+                        <td data-label="Nama Item">${item.item_name}</td>
+                        <td data-label="Jumlah">${item.quantity}</td>
+                        <td data-label="Satuan">${item.unit_type || 'pcs'}</td>
+                        <td data-label="Harga Modal">${formattedCostPrice}</td>
+                        <td data-label="Harga Jual">${formattedSellingPrice}</td>
+                        <td data-label="Keuntungan/Item" class="${profitPerItem < 0 ? 'text-red' : (profitPerItem > 0 ? 'text-green' : '')}">${formattedProfit}</td>
+                        <td data-label="Aksi">
+                            <button class="edit-item-btn" data-id="${item.id}">Edit</button>
+                            <button class="delete-item-btn" data-id="${item.id}">Hapus</button>
+                        </td>
+                    </tr>
+                `;
             });
+            html += `
+                    </tbody>
+                </table>
+            `;
+            inventarisDataDiv.innerHTML = html;
 
-            document.querySelectorAll('.delete-item-btn').forEach(button => {
-                button.addEventListener('click', async (e) => {
-                    const itemId = e.target.dataset.id;
-                    if (confirm('Anda yakin ingin menghapus item ini?')) {
-                        const { error: deleteError } = await supabase
-                            .from('inventories')
-                            .delete()
-                            .eq('id', itemId);
-
-                        if (deleteError) {
-                            console.error("Error deleting item:", deleteError.message);
-                            alert('Gagal menghapus item: ' + deleteError.message);
-                        } else {
-                            alert('Item berhasil dihapus.');
-                            await loadInventarisData(); // Muat ulang data
-                        }
-                    }
-                });
-            });
+            // --- PENTING: TIDAK ADA lagi event listener .forEach() di sini ---
+            // Event listener untuk tombol edit/hapus sekarang ditangani oleh blok di bawah ini
+            // yang menggunakan delegasi event pada inventarisDataDiv.
         }
     }
 }
+
+// --- Event Listener Delegasi Baru (yang menggantikan forEach lama) ---
+// Letakkan blok kode ini SETELAH fungsi loadInventarisData() Anda,
+// di tempat yang akan dijalankan ketika halaman dimuat (misalnya, di dekat bagian bawah file script.js Anda).
+inventarisDataDiv.addEventListener('click', async (e) => {
+    // Cek apakah yang diklik adalah tombol Edit
+    if (e.target.matches('.edit-item-btn')) {
+        const itemId = e.target.dataset.id;
+        console.log('ID Item yang diklik:', itemId); // Untuk debugging
+
+        // Ambil data item yang spesifik dari Supabase (ini yang mengatasi masalah 'data.find')
+        const { data: itemToEdit, error } = await supabase
+            .from('inventories')
+            .select('*')
+            .eq('id', itemId)
+            .single(); // Mengambil hanya satu item berdasarkan ID-nya
+
+        if (error) {
+            console.error("Error fetching item for edit:", error.message);
+            alert('Gagal mengambil detail item untuk diedit. Pastikan RLS Supabase Anda benar.');
+            return;
+        }
+
+        if (itemToEdit) {
+            console.log('Item berhasil ditemukan:', itemToEdit); // Untuk debugging
+            openEditModal(itemToEdit);
+        } else {
+            console.error('Item with ID not found (after re-fetch):', itemId);
+            alert('Item tidak ditemukan atau ada masalah saat memuat data. Mohon cek kembali.');
+        }
+    }
+
+    // Cek apakah yang diklik adalah tombol Hapus
+    if (e.target.matches('.delete-item-btn')) {
+        const itemId = e.target.dataset.id;
+        console.log('Tombol Hapus diklik untuk ID:', itemId); // Untuk debugging
+
+        if (confirm('Apakah Anda yakin ingin menghapus item ini?')) {
+            const { error: deleteError } = await supabase
+                .from('inventories')
+                .delete()
+                .eq('id', itemId);
+
+            if (deleteError) {
+                console.error("Error deleting inventaris:", deleteError.message);
+                alert('Gagal menghapus item: ' + deleteError.message);
+            } else {
+                alert('Item berhasil dihapus!');
+                loadInventarisData(); // Muat ulang data setelah penghapusan
+            }
+        }
+    }
+});
 // Letakkan kode ini SETELAH fungsi loadInventarisData() Anda,
 // di tempat yang akan dijalankan ketika halaman dimuat (misalnya, paling bawah file).
 
