@@ -364,7 +364,6 @@ function showAdminPanel() {
     // mainLogoutBtn.style.display = 'inline-block';
     // loadLicensesData();
 }
-
 // --- BARU: Deklarasi Variabel DOM untuk Pencarian dan Filter ---
 // Asumsi variabel-variabel DOM lainnya (inventarisDataDiv, addInventarisBtn, dll.)
 // sudah dideklarasikan di bagian atas script Anda.
@@ -495,7 +494,7 @@ if (inventarisDataDiv) { // <--- Tambahkan if check
 
             if (error) {
                 console.error("Error fetching item for edit:", error.message);
-                alert('Gagal mengambil detail item untuk diedit. Pastikan RLS Supabase Anda benar.');
+                alert('Gagal mengambil detail item untuk diedit. Pastikan RLS diatur dengan benar.');
                 return;
             }
 
@@ -1050,6 +1049,6 @@ if (unitTypeFilter) {
 // agar tidak ada error di awal.
 // Contoh:
 // document.addEventListener('DOMContentLoaded', () => {
-//     loadInventarisData(); // Panggil pertama kali saat halaman dimuat
-//     // ... logika inisialisasi lainnya
+//       loadInventarisData(); // Panggil pertama kali saat halaman dimuat
+//       // ... logika inisialisasi lainnya
 // });
