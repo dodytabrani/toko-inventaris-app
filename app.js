@@ -1058,4 +1058,4 @@ if (unitTypeFilter) {
 // document.addEventListener('DOMContentLoaded', () => {
 //     loadInventarisData(); // Panggil pertama kali saat halaman dimuat
 //     // ... logika inisialisasi lainnya
-// });
+// };
