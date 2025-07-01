@@ -187,6 +187,29 @@
                     <label for="editSellingPrice">Harga Jual:</label>
                     <input type="number" id="editSellingPrice" step="0.01" required min="0">
                     <span id="editSellingPriceError" class="validation-message"></span>
+					<div id="history-modal" class="modal" style="display: none;">
+            <div class="modal-content large-modal-content">
+                <span class="close-button" id="closeHistoryModalBtn">&times;</span>
+                <h3><span id="historyItemName"></span></h3>
+                <div class="history-table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Waktu Perubahan</th>
+                                <th>Aksi</th>
+                                <th>Data Lama</th>
+                                <th>Data Baru</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody">
+                            </tbody>
+                    </table>
+                </div>
+                <div class="form-actions">
+                    <button type="button" id="cancelHistoryBtn">Tutup</button>
+                </div>
+            </div>
+        </div>
 
                     <div class="form-actions">
                         <button type="submit" id="saveEditBtn">Simpan Perubahan</button>
