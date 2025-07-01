@@ -1049,13 +1049,4 @@ if (unitTypeFilter) {
 } else {
     console.error('ERROR: Elemen unitTypeFilter tidak ditemukan! Pastikan ID HTML sudah benar.');
 }
-
-// --- Contoh Pemanggilan Awal (Jika script Anda dijalankan saat DOM siap) ---
-// Jika Anda memanggil loadInventarisData() secara langsung di awal, pastikan
-// untuk memanggilnya tanpa parameter atau dengan parameter default yang kosong
-// agar tidak ada error di awal.
-// Contoh:
-// document.addEventListener('DOMContentLoaded', () => {
-//     loadInventarisData(); // Panggil pertama kali saat halaman dimuat
-//     // ... logika inisialisasi lainnya
-// }
+});
