@@ -1,6 +1,7 @@
 // js/ui.js
 
 // Referensi Elemen HTML (yang paling sering berinteraksi dengan UI)
+export const exportInventarisBtn = document.getElementById('exportInventarisBtn');
 export const authSection = document.getElementById('auth-section');
 export const appSection = document.getElementById('app-section');
 export const adminLoginSection = document.getElementById('admin-login-section');
