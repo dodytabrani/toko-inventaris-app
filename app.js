@@ -1031,8 +1031,4 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('ERROR: Elemen nextPageBtn (ID: nextPageBtn) tidak ditemukan! Pastikan ada di HTML.');
     }
 
-<<<<<<< HEAD
 }); // Penutup document.addEventListener('DOMContentLoaded'
-=======
-}); // Penutup document.addEventListener('DOMContentLoaded'
->>>>>>> 5314ad5c9aa81ac3d062e82e31433fdee1b219c8
