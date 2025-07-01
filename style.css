@@ -236,6 +236,7 @@ table td button {
     z-index: 100;     /* Pastikan tombol di atas elemen lain di sel tabel */
     min-height: 35px; /* Pastikan tinggi minimal untuk area sentuh */
     box-sizing: border-box; /* Pastikan padding dan border masuk perhitungan tinggi/lebar */
+    touch-action: manipulation; /* Memprioritaskan sentuhan tunggal pada elemen ini */
 }
 
 /* Profit/Loss styling */
@@ -332,7 +333,7 @@ table td button {
     padding: 12px 25px;
     margin-top: 15px; /* Space above buttons */
     margin-right: 15px;
-    border-radius: 6px; /* Corrected typo: was 66px */
+    border-radius: 6px; /* DULU: 66px, TELAH DIPERBAIKI MENJADI 6px */
     font-size: 1.05em;
 }
 
@@ -386,6 +387,7 @@ table td button {
         padding-top: 12px; /* Adjust padding */
         padding-bottom: 12px; /* Adjust padding */
         white-space: normal; /* Allow text to wrap on mobile */
+        touch-action: manipulation; /* Memprioritaskan sentuhan tunggal pada sel tabel */
     }
 
     table td[data-label="Aksi"] {
