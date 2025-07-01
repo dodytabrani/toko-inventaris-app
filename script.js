@@ -445,7 +445,7 @@ inventarisDataDiv.addEventListener('click', async (e) => {
 // Letakkan kode ini SETELAH fungsi loadInventarisData() Anda,
 // di tempat yang akan dijalankan ketika halaman dimuat (misalnya, paling bawah file).
 
-inventarisDataDiv.addEventListener('click', async (e) => {
+inventarisDataDiv.addEventListener('touchend', async (e) => {
     // Cek apakah yang diklik adalah tombol Edit
     if (e.target.matches('.edit-item-btn')) {
         const itemId = e.target.dataset.id;
