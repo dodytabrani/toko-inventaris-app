@@ -854,3 +854,4 @@ saveInventarisBtn.addEventListener('click', async () => {
         await loadInventarisData(); // Muat ulang data inventaris untuk menampilkan yang baru
     }
 });
+});
