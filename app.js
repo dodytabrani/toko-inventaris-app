@@ -302,9 +302,80 @@ async function deleteLicense(licenseId) {
 
 // --- PASTIkan tidak ada 'let inventarisDataCache = [];' atau 'const loadedInventaris = ...' di atas ini ---
 
+// --- Fungsi Pembantu (Harus ada di tempat lain di script Anda, sebelum dipanggil) ---
+// Fungsi ini penting karena dipanggil di 'saveInventarisBtn' click handler.
+// Jika belum ada di script lengkap Anda, pastikan untuk menambahkannya.
+function generateUniqueItemCode() {
+    const timestamp = Date.now().toString(36);
+    const randomPart = Math.random().toString(36).substring(2, 7);
+    return `ITEM-${timestamp}-${randomPart}`.toUpperCase();
+}
+
+// Fungsi untuk memeriksa peran pengguna dan mengarahkan (juga harus ada di script lengkap Anda)
+async function checkUserRoleAndRedirect(user) {
+    const { data: userData, error } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+
+    if (error) {
+        console.error("Error fetching user role:", error.message);
+        // Default ke tampilan user jika ada error atau role tidak ditemukan
+        // Pastikan fungsi showAppSection() didefinisikan di tempat lain
+        showAppSection();
+        return;
+    }
+
+    if (userData && userData.role === 'admin') {
+        // Pastikan fungsi showAdminPanel() didefinisikan di tempat lain
+        showAdminPanel();
+    } else {
+        showAppSection();
+    }
+}
+
+// Fungsi placeholder untuk loadLicensesData (juga harus ada di script lengkap Anda)
+async function loadLicensesData() {
+    console.log("Memuat data lisensi (untuk admin)...");
+    // Implementasi detailnya harus Anda tambahkan
+}
+
+// Fungsi placeholder untuk showAppSection dan showAdminPanel
+// Pastikan fungsi-fungsi ini didefinisikan di script lengkap Anda
+function showAppSection() {
+    console.log("Menampilkan bagian aplikasi user.");
+    // Tambahkan logika untuk menampilkan/menyembunyikan elemen HTML yang relevan
+    // authSection.style.display = 'none';
+    // appSection.style.display = 'block';
+    // adminPanelSection.style.display = 'none';
+    // mainLoginBtn.style.display = 'none';
+    // mainLogoutBtn.style.display = 'inline-block';
+    // loadInventarisData(); // Panggil dengan parameter default setelah login
+}
+
+function showAdminPanel() {
+    console.log("Menampilkan panel admin.");
+    // Tambahkan logika untuk menampilkan/menyembunyikan elemen HTML yang relevan
+    // authSection.style.display = 'none';
+    // appSection.style.display = 'none';
+    // adminPanelSection.style.display = 'block';
+    // mainLoginBtn.style.display = 'none';
+    // mainLogoutBtn.style.display = 'inline-block';
+    // loadLicensesData();
+}
+
+// --- BARU: Deklarasi Variabel DOM untuk Pencarian dan Filter ---
+// Asumsi variabel-variabel DOM lainnya (inventarisDataDiv, addInventarisBtn, dll.)
+// sudah dideklarasikan di bagian atas script Anda.
+// Anda perlu menambahkan ini:
+const searchInput = document.getElementById('search-item-input');
+const unitTypeFilter = document.getElementById('unit-type-filter');
+
+
 // Muat Data Inventaris
-async function loadInventarisData() {
-    const { data: { user } } = await supabase.auth.getUser();
+async function loadInventarisData(searchTerm = '', filterUnitType = '') { // <<<--- MODIFIKASI: Tambah parameter dengan nilai default
+    const { data: { user } = {} } = await supabase.auth.getUser(); // Tambah default empty object untuk data
     if (!user) {
         inventarisDataDiv.innerHTML = '<p>Anda harus login untuk melihat inventaris.</p>';
         addInventarisBtn.style.display = 'none';
@@ -320,24 +391,40 @@ async function loadInventarisData() {
 
     if (!license || !license.is_active || new Date(license.expiry_date) < new Date()) {
         inventarisDataDiv.innerHTML = '<p>Akses inventaris ditolak: Lisensi tidak aktif atau sudah kadaluarsa.</p>';
-        addInventarisBtn.style.display = 'none'; // Sembunyikan tombol tambah jika lisensi aktif
+        addInventarisBtn.style.display = 'none';
         return;
     } else {
-        addInventarisBtn.style.display = 'inline-block'; // Tampilkan tombol tambah jika lisensi aktif
+        addInventarisBtn.style.display = 'inline-block';
     }
 
-    const { data, error } = await supabase
+    let query = supabase
         .from('inventories')
         .select('*')
-        .eq('user_id', user.id) // Penting: Hanya ambil data user yang login
-        .order('created_at', { ascending: false }); // Urutkan berdasarkan tanggal terbaru
+        .eq('user_id', user.id);
+
+    // --- MULAI PENAMBAHAN LOGIKA PENCARIAN & FILTER DI SINI ---
+    if (searchTerm) {
+        query = query.or(`item_code.ilike.%${searchTerm}%,item_name.ilike.%${searchTerm}%`);
+    }
+
+    if (filterUnitType) {
+        query = query.eq('unit_type', filterUnitType);
+    }
+    // --- AKHIR PENAMBAHAN LOGIKA PENCARIAN & FILTER ---
+
+    const { data, error } = await query.order('created_at', { ascending: false });
 
     if (error) {
         console.error("Error loading inventaris:", error.message);
         inventarisDataDiv.innerHTML = '<p class="message error">Gagal memuat data inventaris. Pastikan RLS diatur dengan benar.</p>';
     } else {
         if (data.length === 0) {
-            inventarisDataDiv.innerHTML = '<p>Anda belum memiliki item inventaris. Klik "Tambah Item" untuk memulai.</p>';
+            // MODIFIKASI: Pesan berbeda jika ada pencarian/filter tapi tidak ada hasil
+            if (searchTerm || filterUnitType) {
+                inventarisDataDiv.innerHTML = '<p>Tidak ada item inventaris yang cocok dengan kriteria pencarian/filter Anda.</p>';
+            } else {
+                inventarisDataDiv.innerHTML = '<p>Anda belum memiliki item inventaris. Klik "Tambah Item" untuk memulai.</p>';
+            }
         } else {
             let html = `
                 <table>
@@ -384,8 +471,6 @@ async function loadInventarisData() {
             inventarisDataDiv.innerHTML = html;
 
             // --- PENTING: TIDAK ADA lagi event listener .forEach() di sini ---
-            // Event listener untuk tombol edit/hapus sekarang ditangani oleh blok di bawah ini
-            // yang menggunakan delegasi event pada inventarisDataDiv.
         }
     }
 }
@@ -501,30 +586,12 @@ function openEditModal(item) {
 
     // Pastikan properti item ada sebelum mencoba menggunakannya
     const itemId = item ? item.id : null;
-    const itemCode = item ? item.item_code : ''; // <-- BARU
+    const itemCode = item ? item.item_code : '';
     const itemName = item ? item.item_name : '';
     const itemQuantity = item ? item.quantity : 0;
-    const itemUnitType = item ? item.unit_type : 'pcs'; // <-- BARU
-    const itemCostPrice = item ? item.cost_price : 0; // <-- BARU
-    const itemSellingPrice = item ? item.selling_price : 0; // <-- BARU
-
-    // HAPUS BARIS INI KARENA TIDAK DIGUNAKAN LAGI JIKA SUDAH ADA selling_price
-    // const itemPrice = item ? item.price : 0; 
-
-    // Debugging keberadaan elemen DOM
-    console.log('Cek Elemen DOM:');
-    console.log('editItemId:', editItemId);
-    console.log('editItemCode:', editItemCode); // <-- BARU
-    console.log('editItemName:', editItemName);
-    console.log('editQuantity:', editQuantity);
-    console.log('editUnitType:', editUnitType); // <-- BARU
-    console.log('editCostPrice:', editCostPrice); // <-- BARU
-    console.log('editSellingPrice:', editSellingPrice); // <-- BARU
-    
-    // HAPUS BARIS INI KARENA VARIABEL 'editPrice' SUDAH TIDAK ADA
-    // console.log('editPrice:', editPrice); 
-    
-    console.log('editItemModal:', editItemModal);
+    const itemUnitType = item ? item.unit_type : 'pcs';
+    const itemCostPrice = item ? item.cost_price : 0;
+    const itemSellingPrice = item ? item.selling_price : 0;
 
     // Mengisi nilai input
     if (editItemId) {
@@ -534,7 +601,7 @@ function openEditModal(item) {
         console.error('ERROR: Elemen editItemId tidak ditemukan!');
     }
 
-    if (editItemCode) { // <-- BARU
+    if (editItemCode) {
         editItemCode.value = itemCode;
         console.log(`Set editItemCode.value to: ${editItemCode.value}`);
     } else {
@@ -555,21 +622,21 @@ function openEditModal(item) {
         console.error('ERROR: Elemen editQuantity tidak ditemukan!');
     }
 
-    if (editUnitType) { // <-- BARU
+    if (editUnitType) {
         editUnitType.value = itemUnitType;
         console.log(`Set editUnitType.value to: ${editUnitType.value}`);
     } else {
         console.error('ERROR: Elemen editUnitType tidak ditemukan!');
     }
-    
-    if (editCostPrice) { // <-- BARU
+
+    if (editCostPrice) {
         editCostPrice.value = itemCostPrice;
         console.log(`Set editCostPrice.value to: ${editCostPrice.value}`);
     } else {
         console.error('ERROR: Elemen editCostPrice tidak ditemukan!');
     }
-    
-    if (editSellingPrice) { // <-- BARU
+
+    if (editSellingPrice) {
         editSellingPrice.value = itemSellingPrice;
         console.log(`Set editSellingPrice.value to: ${editSellingPrice.value}`);
     } else {
@@ -607,37 +674,34 @@ if (editItemForm) {
         const itemId = editItemId ? editItemId.value : null;
         const itemName = editItemName ? editItemName.value.trim() : '';
         const quantity = editQuantity ? parseInt(editQuantity.value) : NaN;
-        const unitType = editUnitType ? editUnitType.value : ''; // <-- Ini sudah benar
-        const costPrice = editCostPrice ? parseFloat(editCostPrice.value) : NaN; // <-- Ini sudah benar
-        const sellingPrice = editSellingPrice ? parseFloat(editSellingPrice.value) : NaN; // <-- Ini sudah benar
-        // const price = editPrice ? parseFloat(editPrice.value) : NaN; // <-- HAPUS BARIS INI!
+        const unitType = editUnitType ? editUnitType.value : '';
+        const costPrice = editCostPrice ? parseFloat(editCostPrice.value) : NaN;
+        const sellingPrice = editSellingPrice ? parseFloat(editSellingPrice.value) : NaN;
 
-        // Perbarui validasi untuk menggunakan costPrice dan sellingPrice
         if (!itemId || !itemName || isNaN(quantity) || isNaN(costPrice) || isNaN(sellingPrice) || quantity < 0 || costPrice < 0 || sellingPrice < 0) {
             alert('Semua bidang harus diisi dengan nilai yang valid (jumlah/harga tidak boleh negatif).');
             return;
         }
 
         try {
-            const { data: { user } } = await supabase.auth.getUser(); 
+            const { data: { user } = {} } = await supabase.auth.getUser();
             if (!user) {
                 alert('Anda harus login untuk memperbarui item.');
                 return;
             }
 
-            // Perbarui payload update untuk menggunakan cost_price dan selling_price
             const { data, error } = await supabase
                 .from('inventories')
                 .update({
                     item_name: itemName,
                     quantity: quantity,
-                    unit_type: unitType, // <-- Tambahkan ini
-                    cost_price: costPrice, // <-- Ganti dari 'price'
-                    selling_price: sellingPrice, // <-- Tambahkan ini
+                    unit_type: unitType,
+                    cost_price: costPrice,
+                    selling_price: sellingPrice,
                     last_updated: new Date().toISOString()
                 })
                 .eq('id', itemId)
-                .eq('user_id', user.id); // Penting: Pastikan user_id cocok
+                .eq('user_id', user.id);
 
             if (error) throw error;
 
@@ -654,110 +718,118 @@ if (editItemForm) {
 // --- 4. EVENT LISTENERS UTAMA (NON-MODAL) ---
 
 // Tombol Login/Daftar Utama (Header)
-mainLoginBtn.addEventListener('click', () => {
-    authSection.style.display = 'block';
-    appSection.style.display = 'none';
-    adminPanelSection.style.display = 'none';
-    adminLoginSection.style.display = 'block'; // Tampilkan juga form admin login
-    mainLoginBtn.style.display = 'none';
-    mainLogoutBtn.style.display = 'none';
-});
-
-// Tombol Logout Utama (Header)
-mainLogoutBtn.addEventListener('click', async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-        console.error("Logout error:", error.message);
-        alert('Gagal logout: ' + error.message);
-    } else {
-        alert('Logout berhasil!');
-        // Kembali ke halaman autentikasi
+if (mainLoginBtn) { // <<<--- Tambahkan if check untuk menghindari error jika elemen tidak ada
+    mainLoginBtn.addEventListener('click', () => {
         authSection.style.display = 'block';
         appSection.style.display = 'none';
         adminPanelSection.style.display = 'none';
-        adminLoginSection.style.display = 'block';
-        mainLoginBtn.style.display = 'inline-block';
+        adminLoginSection.style.display = 'block'; // Tampilkan juga form admin login
+        mainLoginBtn.style.display = 'none';
         mainLogoutBtn.style.display = 'none';
-    }
-});
+    });
+}
+
+
+// Tombol Logout Utama (Header)
+if (mainLogoutBtn) { // <<<--- Tambahkan if check
+    mainLogoutBtn.addEventListener('click', async () => {
+        const { error } = await supabase.auth.signOut();
+        if (error) {
+            console.error("Logout error:", error.message);
+            alert('Gagal logout: ' + error.message);
+        } else {
+            alert('Logout berhasil!');
+            // Kembali ke halaman autentikasi
+            authSection.style.display = 'block';
+            appSection.style.display = 'none';
+            adminPanelSection.style.display = 'none';
+            adminLoginSection.style.display = 'block';
+            mainLoginBtn.style.display = 'inline-block';
+            mainLogoutBtn.style.display = 'none';
+        }
+    });
+}
+
 
 // Daftar User
-signupBtn.addEventListener('click', async () => {
-    const email = signupEmailInput.value;
-    const password = signupPasswordInput.value;
-    signupMessage.textContent = ''; // Reset pesan
+if (signupBtn) { // <<<--- Tambahkan if check
+    signupBtn.addEventListener('click', async () => {
+        const email = signupEmailInput.value;
+        const password = signupPasswordInput.value;
+        signupMessage.textContent = ''; // Reset pesan
 
-    if (!email || !password) {
-        signupMessage.textContent = 'Email dan password harus diisi.';
-        signupMessage.className = 'message error';
-        return;
-    }
-
-    const { data, error } = await supabase.auth.signUp({ email, password });
-
-    if (error) {
-        signupMessage.textContent = 'Daftar gagal: ' + error.message;
-        signupMessage.className = 'message error';
-        console.error("Signup error:", error.message);
-    } else if (data.user) {
-        // Setelah user berhasil terdaftar di auth.users, buat entri di public.users
-        const { error: userInsertError } = await supabase
-            .from('users')
-            .insert([
-                { id: data.user.id, email: data.user.email, role: 'user' }
-            ]);
-
-        if (userInsertError) {
-            console.error("Error inserting into public.users:", userInsertError.message);
-            signupMessage.textContent = 'Daftar berhasil tapi gagal menyimpan profil user. Harap hubungi admin.';
+        if (!email || !password) {
+            signupMessage.textContent = 'Email dan password harus diisi.';
             signupMessage.className = 'message error';
+            return;
+        }
+
+        const { data, error } = await supabase.auth.signUp({ email, password });
+
+        if (error) {
+            signupMessage.textContent = 'Daftar gagal: ' + error.message;
+            signupMessage.className = 'message error';
+            console.error("Signup error:", error.message);
+        } else if (data.user) {
+            // Setelah user berhasil terdaftar di auth.users, buat entri di public.users
+            const { error: userInsertError } = await supabase
+                .from('users')
+                .insert([
+                    { id: data.user.id, email: data.user.email, role: 'user' }
+                ]);
+
+            if (userInsertError) {
+                console.error("Error inserting into public.users:", userInsertError.message);
+                signupMessage.textContent = 'Daftar berhasil tapi gagal menyimpan profil user. Harap hubungi admin.';
+                signupMessage.className = 'message error';
+            } else {
+                signupMessage.textContent = 'Daftar berhasil! Silakan cek email Anda untuk konfirmasi (jika diaktifkan).';
+                signupMessage.className = 'message success';
+                signupEmailInput.value = '';
+                signupPasswordInput.value = '';
+                // await checkUserRoleAndRedirect(data.user); // Opsional: langsung login
+            }
         } else {
-            signupMessage.textContent = 'Daftar berhasil! Silakan cek email Anda untuk konfirmasi (jika diaktifkan).';
-            signupMessage.className = 'message success';
+            signupMessage.textContent = 'Pendaftaran berhasil. Silakan cek email Anda untuk konfirmasi.';
+            signupMessage.className = 'message info';
             signupEmailInput.value = '';
             signupPasswordInput.value = '';
-            // Setelah daftar berhasil, langsung coba login atau tampilkan UI yang sesuai
-            // await checkUserRoleAndRedirect(data.user); // Opsional: langsung login
         }
-    } else {
-        // Ini mungkin terjadi jika email confirmation diaktifkan dan user belum konfirmasi
-        signupMessage.textContent = 'Pendaftaran berhasil. Silakan cek email Anda untuk konfirmasi.';
-        signupMessage.className = 'message info';
-        signupEmailInput.value = '';
-        signupPasswordInput.value = '';
-    }
-});
+    });
+}
 
 
 // Login User
-loginBtn.addEventListener('click', async () => {
-    const email = loginEmailInput.value;
-    const password = loginPasswordInput.value;
-    loginMessage.textContent = ''; // Reset pesan
+if (loginBtn) { // <<<--- Tambahkan if check
+    loginBtn.addEventListener('click', async () => {
+        const email = loginEmailInput.value;
+        const password = loginPasswordInput.value;
+        loginMessage.textContent = ''; // Reset pesan
 
-    if (!email || !password) {
-        loginMessage.textContent = 'Email dan password harus diisi.';
-        loginMessage.className = 'message error';
-        return;
-    }
+        if (!email || !password) {
+            loginMessage.textContent = 'Email dan password harus diisi.';
+            loginMessage.className = 'message error';
+            return;
+        }
 
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
-    if (error) {
-        loginMessage.textContent = 'Login gagal: ' + error.message;
-        loginMessage.className = 'message error';
-        console.error("Login error:", error.message);
-    } else {
-        loginMessage.textContent = 'Login berhasil!';
-        loginMessage.className = 'message success';
-        loginEmailInput.value = '';
-        loginPasswordInput.value = '';
-        await checkUserRoleAndRedirect(data.user);
-    }
-});
+        if (error) {
+            loginMessage.textContent = 'Login gagal: ' + error.message;
+            loginMessage.className = 'message error';
+            console.error("Login error:", error.message);
+        } else {
+            loginMessage.textContent = 'Login berhasil!';
+            loginMessage.className = 'message success';
+            loginEmailInput.value = '';
+            loginPasswordInput.value = '';
+            await checkUserRoleAndRedirect(data.user);
+        }
+    });
+}
 
 // Logout User dari App Section
-if (logoutBtn) { // <--- Ini awal if statement
+if (logoutBtn) {
     logoutBtn.addEventListener('click', async () => {
         const { error } = await supabase.auth.signOut();
         if (error) {
@@ -773,166 +845,217 @@ if (logoutBtn) { // <--- Ini awal if statement
             mainLoginBtn.style.display = 'inline-block';
             mainLogoutBtn.style.display = 'none';
         }
-    }); // Ini akhir dari addEventListener
-} // <--- INI KURUNG KURAWAL PENUTUP YANG HILANG DAN PERLU DITAMBAHKAN
+    });
+} // <<<--- PERBAIKAN SYNTAX: Kurung kurawal penutup yang hilang
+
 
 // Admin Login
-adminLoginBtn.addEventListener('click', async () => {
-    const email = adminEmailInput.value;
-    const password = adminPasswordInput.value;
-    adminLoginMessage.textContent = '';
+if (adminLoginBtn) { // <<<--- Tambahkan if check
+    adminLoginBtn.addEventListener('click', async () => {
+        const email = adminEmailInput.value;
+        const password = adminPasswordInput.value;
+        adminLoginMessage.textContent = '';
 
-    if (!email || !password) {
-        adminLoginMessage.textContent = 'Email dan password admin harus diisi.';
-        adminLoginMessage.className = 'message error';
-        return;
-    }
-
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-
-    if (error) {
-        adminLoginMessage.textContent = 'Login admin gagal: ' + error.message;
-        adminLoginMessage.className = 'message error';
-        console.error("Admin login error:", error.message);
-    } else {
-        // Cek peran user setelah login
-        const { data: userData, error: userError } = await supabase
-            .from('users')
-            .select('role')
-            .eq('id', data.user.id)
-            .single();
-
-        if (userError || !userData || userData.role !== 'admin') {
-            await supabase.auth.signOut(); // Langsung logout jika bukan admin
-            adminLoginMessage.textContent = 'Akses ditolak: Hanya admin yang diizinkan.';
+        if (!email || !password) {
+            adminLoginMessage.textContent = 'Email dan password admin harus diisi.';
             adminLoginMessage.className = 'message error';
-            console.warn("Unauthorized admin access attempt for user:", email);
-        } else {
-            adminLoginMessage.textContent = 'Login admin berhasil!';
-            adminLoginMessage.className = 'message success';
-            adminEmailInput.value = '';
-            adminPasswordInput.value = '';
-            showAdminPanel();
+            return;
         }
-    }
-});
+
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+        if (error) {
+            adminLoginMessage.textContent = 'Login admin gagal: ' + error.message;
+            adminLoginMessage.className = 'message error';
+            console.error("Admin login error:", error.message);
+        } else {
+            // Cek peran user setelah login
+            const { data: userData, error: userError } = await supabase
+                .from('users')
+                .select('role')
+                .eq('id', data.user.id)
+                .single();
+
+            if (userError || !userData || userData.role !== 'admin') {
+                await supabase.auth.signOut(); // Langsung logout jika bukan admin
+                adminLoginMessage.textContent = 'Akses ditolak: Hanya admin yang diizinkan.';
+                adminLoginMessage.className = 'message error';
+                console.warn("Unauthorized admin access attempt for user:", email);
+            } else {
+                adminLoginMessage.textContent = 'Login admin berhasil!';
+                adminLoginMessage.className = 'message success';
+                adminEmailInput.value = '';
+                adminPasswordInput.value = '';
+                showAdminPanel();
+            }
+        }
+    });
+}
+
 
 // Admin Logout
-adminLogoutBtn.addEventListener('click', async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-        console.error("Admin logout error:", error.message);
-        alert('Gagal logout admin: ' + error.message);
-    } else {
-        alert('Logout admin berhasil!');
-        // Kembali ke halaman autentikasi
-        authSection.style.display = 'block';
-        appSection.style.display = 'none';
-        adminPanelSection.style.display = 'none';
-        adminLoginSection.style.display = 'block';
-        mainLoginBtn.style.display = 'inline-block';
-        mainLogoutBtn.style.display = 'none';
-    }
-});
+if (adminLogoutBtn) { // <<<--- Tambahkan if check
+    adminLogoutBtn.addEventListener('click', async () => {
+        const { error } = await supabase.auth.signOut();
+        if (error) {
+            console.error("Admin logout error:", error.message);
+            alert('Gagal logout admin: ' + error.message);
+        } else {
+            alert('Logout admin berhasil!');
+            // Kembali ke halaman autentikasi
+            authSection.style.display = 'block';
+            appSection.style.display = 'none';
+            adminPanelSection.style.display = 'none';
+            adminLoginSection.style.display = 'block';
+            mainLoginBtn.style.display = 'inline-block';
+            mainLogoutBtn.style.display = 'none';
+        }
+    });
+}
 
-refreshLicensesBtn.addEventListener('click', loadLicensesData);
+
+if (refreshLicensesBtn) { // <<<--- Tambahkan if check
+    refreshLicensesBtn.addEventListener('click', loadLicensesData);
+}
 
 
 /// Event listener untuk tombol "Tambah Item"
-addInventarisBtn.addEventListener('click', () => {
-    addInventarisForm.style.display = 'block'; // Tampilkan form
-    addInventarisBtn.style.display = 'none'; // Sembunyikan tombol "Tambah Item"
-    
-    // Kosongkan dan reset semua input form tambah item
-    itemNameInput.value = '';
-    itemQuantityInput.value = '';
-    itemUnitTypeInput.value = 'pcs'; // Atur nilai default 'pcs'
-    itemCostPriceInput.value = '';
-    itemSellingPriceInput.value = '';
-    
-    inventarisFormMessage.textContent = ''; // Kosongkan pesan
-    inventarisFormMessage.className = 'message';
-});
+if (addInventarisBtn) { // <<<--- Tambahkan if check
+    addInventarisBtn.addEventListener('click', () => {
+        addInventarisForm.style.display = 'block'; // Tampilkan form
+        addInventarisBtn.style.display = 'none'; // Sembunyikan tombol "Tambah Item"
 
-// Event listener untuk tombol "Batal" di form tambah item
-cancelAddInventarisBtn.addEventListener('click', () => {
-    addInventarisForm.style.display = 'none'; // Sembunyikan form
-    addInventarisBtn.style.display = 'inline-block'; // Tampilkan kembali tombol "Tambah Item"
-});
-
-// Event listener untuk tombol "Simpan Item"
-saveInventarisBtn.addEventListener('click', async () => {
-    const itemName = itemNameInput.value.trim();
-    const itemQuantity = parseInt(itemQuantityInput.value);
-    const itemUnitType = itemUnitTypeInput.value; // Ambil nilai satuan
-    const itemCostPrice = parseFloat(itemCostPriceInput.value); // Ambil harga modal
-    const itemSellingPrice = parseFloat(itemSellingPriceInput.value); // Ambil harga jual
-
-    inventarisFormMessage.textContent = '';
-
-    // Perbarui validasi
-    if (!itemName || isNaN(itemQuantity) || isNaN(itemCostPrice) || isNaN(itemSellingPrice) || itemQuantity < 0 || itemCostPrice < 0 || itemSellingPrice < 0) {
-        inventarisFormMessage.textContent = 'Semua bidang harus diisi dengan nilai yang valid (jumlah/harga tidak boleh negatif).';
-        inventarisFormMessage.className = 'message error';
-        return;
-    }
-
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-        inventarisFormMessage.textContent = 'Anda harus login untuk menambah item.';
-        inventarisFormMessage.className = 'message error';
-        return;
-    }
-
-    // Pastikan user memiliki lisensi aktif sebelum menambah item inventaris
-    const { data: license, error: licenseError } = await supabase
-        .from('licenses')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-
-    if (licenseError || !license || !license.is_active || new Date(license.expiry_date) < new Date()) {
-        inventarisFormMessage.textContent = 'Anda tidak memiliki lisensi aktif untuk menambah item inventaris.';
-        inventarisFormMessage.className = 'message error';
-        console.error("License check failed for inventory add:", licenseError ? licenseError.message : "No active license.");
-        return;
-    }
-
-    // --- KODE UNTUK MENYIMPAN INVENTARIS YANG BENAR ---
-    const newItemCode = generateUniqueItemCode(); // Buat kode item baru
-
-    const { data, error } = await supabase
-        .from('inventories')
-        .insert([
-            {
-                item_name: itemName,
-                quantity: itemQuantity,
-                unit_type: itemUnitType, // <-- Tambah satuan
-                cost_price: itemCostPrice, // <-- Tambah harga modal
-                selling_price: itemSellingPrice, // <-- Tambah harga jual
-                item_code: newItemCode // <-- Tambah kode item
-                // created_at dan last_updated seharusnya otomatis diurus oleh DB jika default valuenya NOW()
-            }
-        ]);
-
-    if (error) {
-        console.error("Error saving inventory item:", error.message);
-        inventarisFormMessage.textContent = 'Error: Gagal menyimpan item inventaris. ' + error.message;
-        inventarisFormMessage.className = 'message error';
-    } else {
-        console.log("Inventory item saved successfully:", data);
-        inventarisFormMessage.textContent = 'Item berhasil disimpan!';
-        inventarisFormMessage.className = 'message success';
+        // Kosongkan dan reset semua input form tambah item
         itemNameInput.value = '';
         itemQuantityInput.value = '';
-        itemUnitTypeInput.value = 'pcs'; // Reset ke default
+        itemUnitTypeInput.value = 'pcs'; // Atur nilai default 'pcs'
         itemCostPriceInput.value = '';
         itemSellingPriceInput.value = '';
 
-        addInventarisForm.style.display = 'none';
-        addInventarisBtn.style.display = 'inline-block';
+        inventarisFormMessage.textContent = ''; // Kosongkan pesan
+        inventarisFormMessage.className = 'message';
+    });
+}
 
-        await loadInventarisData(); // Muat ulang data inventaris untuk menampilkan yang baru
-    }
-});
-});
+
+// Event listener untuk tombol "Batal" di form tambah item
+if (cancelAddInventarisBtn) { // <<<--- Tambahkan if check
+    cancelAddInventarisBtn.addEventListener('click', () => {
+        addInventarisForm.style.display = 'none'; // Sembunyikan form
+        addInventarisBtn.style.display = 'inline-block'; // Tampilkan kembali tombol "Tambah Item"
+    });
+}
+
+
+// Event listener untuk tombol "Simpan Item"
+if (saveInventarisBtn) { // <<<--- Tambahkan if check
+    saveInventarisBtn.addEventListener('click', async () => {
+        const itemName = itemNameInput.value.trim();
+        const itemQuantity = parseInt(itemQuantityInput.value);
+        const itemUnitType = itemUnitTypeInput.value;
+        const itemCostPrice = parseFloat(itemCostPriceInput.value);
+        const itemSellingPrice = parseFloat(itemSellingPriceInput.value);
+
+        inventarisFormMessage.textContent = '';
+
+        if (!itemName || isNaN(itemQuantity) || isNaN(itemCostPrice) || isNaN(itemSellingPrice) || itemQuantity < 0 || itemCostPrice < 0 || itemSellingPrice < 0) {
+            inventarisFormMessage.textContent = 'Semua bidang harus diisi dengan nilai yang valid (jumlah/harga tidak boleh negatif).';
+            inventarisFormMessage.className = 'message error';
+            return;
+        }
+
+        const { data: { user } = {} } = await supabase.auth.getUser();
+        if (!user) {
+            inventarisFormMessage.textContent = 'Anda harus login untuk menambah item.';
+            inventarisFormMessage.className = 'message error';
+            return;
+        }
+
+        // Pastikan user memiliki lisensi aktif sebelum menambah item inventaris
+        const { data: license, error: licenseError } = await supabase
+            .from('licenses')
+            .select('*')
+            .eq('user_id', user.id)
+            .single();
+
+        if (licenseError || !license || !license.is_active || new Date(license.expiry_date) < new Date()) {
+            inventarisFormMessage.textContent = 'Anda tidak memiliki lisensi aktif untuk menambah item inventaris.';
+            inventarisFormMessage.className = 'message error';
+            console.error("License check failed for inventory add:", licenseError ? licenseError.message : "No active license.");
+            return;
+        }
+
+        const newItemCode = generateUniqueItemCode();
+
+        const { data, error } = await supabase
+            .from('inventories')
+            .insert([
+                {
+                    item_name: itemName,
+                    quantity: itemQuantity,
+                    unit_type: itemUnitType,
+                    cost_price: itemCostPrice,
+                    selling_price: itemSellingPrice,
+                    item_code: newItemCode
+                }
+            ]);
+
+        if (error) {
+            console.error("Error saving inventory item:", error.message);
+            inventarisFormMessage.textContent = 'Error: Gagal menyimpan item inventaris. ' + error.message;
+            inventarisFormMessage.className = 'message error';
+        } else {
+            console.log("Inventory item saved successfully:", data);
+            inventarisFormMessage.textContent = 'Item berhasil disimpan!';
+            inventarisFormMessage.className = 'message success';
+            itemNameInput.value = '';
+            itemQuantityInput.value = '';
+            itemUnitTypeInput.value = 'pcs';
+            itemCostPriceInput.value = '';
+            itemSellingPriceInput.value = '';
+
+            addInventarisForm.style.display = 'none';
+            addInventarisBtn.style.display = 'inline-block';
+
+            await loadInventarisData(); // Muat ulang data inventaris untuk menampilkan yang baru
+        }
+    });
+}
+// <<<--- PERBAIKAN SYNTAX: Hapus }); yang tidak pada tempatnya di sini.
+// Potongan script Anda diakhiri dengan }); yang merupakan penutup dari addEventListener sebelumnya.
+// Jika ini adalah akhir file Anda, pastikan tidak ada karakter sisa.
+
+
+// --- BARU: Event Listener untuk Pencarian dan Filter ---
+// Letakkan ini setelah semua definisi fungsi dan variabel DOM utama.
+if (searchInput) {
+    searchInput.addEventListener('keyup', () => {
+        const searchTerm = searchInput.value.trim();
+        // Pastikan unitTypeFilter juga ada saat memanggil loadInventarisData
+        const filterUnitType = unitTypeFilter ? unitTypeFilter.value : '';
+        loadInventarisData(searchTerm, filterUnitType);
+    });
+} else {
+    console.error('ERROR: Elemen searchInput tidak ditemukan! Pastikan ID HTML sudah benar.');
+}
+
+if (unitTypeFilter) {
+    unitTypeFilter.addEventListener('change', () => {
+        // Pastikan searchInput juga ada saat memanggil loadInventarisData
+        const searchTerm = searchInput ? searchInput.value.trim() : '';
+        const filterUnitType = unitTypeFilter.value;
+        loadInventarisData(searchTerm, filterUnitType);
+    });
+} else {
+    console.error('ERROR: Elemen unitTypeFilter tidak ditemukan! Pastikan ID HTML sudah benar.');
+}
+
+// --- Contoh Pemanggilan Awal (Jika script Anda dijalankan saat DOM siap) ---
+// Jika Anda memanggil loadInventarisData() secara langsung di awal, pastikan
+// untuk memanggilnya tanpa parameter atau dengan parameter default yang kosong
+// agar tidak ada error di awal.
+// Contoh:
+// document.addEventListener('DOMContentLoaded', () => {
+//     loadInventarisData(); // Panggil pertama kali saat halaman dimuat
+//     // ... logika inisialisasi lainnya
+// });
